@@ -16,7 +16,7 @@ num_embeddings = 300
 
 """
 input format: (id1, id2, label)
-embedding format: (id em1 em2 ...)
+embedding format: (id em[1] em[2] ...)
 
 """
 
