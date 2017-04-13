@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
   PreprocessTransitionProbs(InNet, ParamP, ParamQ, Verbose);
   PWNet SampleNet = PWNet::New();
   BuildSampleGraph(InNet, SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, 
-   Verbose); // TO DO
+   Verbose); // TO DO: Chuanwei
 
 
   TIntFltVH EmbeddingsHVForSample;
