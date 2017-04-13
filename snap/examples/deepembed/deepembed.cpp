@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 
 
   Yue:
-  LinearInterpolation(InNet, EmbeddingsHVForAll, EmbeddingsHVForSample, ...;
+  LinearInterpolation(SampleNet, EmbeddingsHVForAll, EmbeddingsHVForSample, ...;
 
   WriteOutput(OutFile, EmbeddingsHVForAll);
   */
