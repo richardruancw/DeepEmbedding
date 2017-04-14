@@ -13,11 +13,11 @@
 int main(int argc, char* argv[]) {
   // File names
   TStr InFile,OutFile;
-  int Dimensions, WalkLen, NumWalks, WinSize, Iter;
+  int Dimensions, WalkLen, NumWalks, WinSize, Iter, ShrinkFactor;
   double ParamP, ParamQ;
   bool Directed, Weighted, Verbose;
   ParseArgs(argc, argv, InFile, OutFile, Dimensions, WalkLen, NumWalks, WinSize,
-   Iter, Verbose, ParamP, ParamQ, Directed, Weighted);
+   Iter, ShrinkFactor, Verbose, ParamP, ParamQ, Directed, Weighted);
 
 
   PWNet InNet = PWNet::New();
@@ -25,9 +25,11 @@ int main(int argc, char* argv[]) {
   // Prepare the graph for random walk
   PreprocessTransitionProbs(InNet, ParamP, ParamQ, Verbose);
   PWNet SampleNet = PWNet::New();
-  BuildSampleGraph(InNet, SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, 
-   Verbose); // TO DO: Chuanwei
 
+  THashSet<TInt> RepresentativeNodes;
+  TInt NumRepNodes =  InNet->GetNodes() / ShrinkFactor;
+  SelectRepresentativeNodes(InNet, RepresentativeNodes, NumRepNodes, ParamP, ParamQ, 
+  Dimensions, WalkLen, NumWalks, Iter, Verbose);
 
   TIntFltVH EmbeddingsHVForSample;
   TIntFltVH EmbeddingsHVForAll;
@@ -47,8 +49,6 @@ int main(int argc, char* argv[]) {
   WriteOutput(OutFile, EmbeddingsHVForAll);
   */
 
-
-  TestSAMPLEGRAPH();
   TestLINEARINTERPOLATION();
   TestRECOVEREDGES();
 
