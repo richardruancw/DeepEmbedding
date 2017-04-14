@@ -1,6 +1,6 @@
 gcloud dataproc jobs submit pyspark --cluster my_cluster collapse.py
 
-gsutil cp gs://my-bucket/graph .
+gsutil cp gs://pinterest-data/graph .
 cd graph
 cat part* > collapsed_graph.txt
 
