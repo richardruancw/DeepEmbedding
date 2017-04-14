@@ -1,0 +1,6 @@
+#ifndef RECOVEREDGES_H
+#define RECOVEREDGES_H
+
+void TestRECOVEREDGES();
+
+#endif //RECOVEREDGES_H
