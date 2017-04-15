@@ -43,11 +43,12 @@ int main(int argc, char* argv[]) {
   */
 
   //Option 1:
-  /*
-  RecoverEdges(InNet, SampleNet, ...);
-  node2vec(InNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
-   Verbose, EmbeddingsHVForSample);
-   */
+  
+  // RecoverEdges(InNet, SampleNet, RepresentativeNodes, 
+  //   ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+  // node2vec(SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
+  //  Verbose, EmbeddingsHVForSample);
+  // WriteOutput(OutFile, EmbeddingsHVForSample);
 
 
     
