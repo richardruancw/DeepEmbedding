@@ -19,7 +19,7 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
    "Number of walks per source. Default is 10");
   WinSize = Env.GetIfArgPrefixInt("-k:", 10,
    "Context size for optimization. Default is 10");
-  ShrinkFactor = Env.GetIfArgPrefixInt("-s:", 10,
+  ShrinkFactor = Env.GetIfArgPrefixInt("-s:", 100,
    "Shrink factor of nodes number. Default is 10");
   Iter = Env.GetIfArgPrefixInt("-e:", 1,
    "Number of epochs in SGD. Default is 1");
@@ -64,6 +64,27 @@ void ReadGraph(TStr& InFile, bool& Directed, bool& Weighted, bool& Verbose, PWNe
 }
 
 
+void WriteOutput(TStr& OutFile, TIntFltVH& EmbeddingsHV) {
+  TFOut FOut(OutFile);
+  bool First = 1;
+  for (int i = EmbeddingsHV.FFirstKeyId(); EmbeddingsHV.FNextKeyId(i);) {
+    if (First) {
+      FOut.PutInt(EmbeddingsHV.Len());
+      FOut.PutCh(' ');
+      FOut.PutInt(EmbeddingsHV[i].Len());
+      FOut.PutLn();
+      First = 0;
+    }
+    FOut.PutInt(EmbeddingsHV.GetKey(i));
+    for (int64 j = 0; j < EmbeddingsHV[i].Len(); j++) {
+      FOut.PutCh(' ');
+      FOut.PutFlt(EmbeddingsHV[i][j]);
+    }
+    FOut.PutLn();
+  }
+}
+
+
 void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV,double& ParamP, double& ParamQ, 
   int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose) {
   int64 AllWalks = WalksVV.GetXDim();
@@ -78,7 +99,6 @@ void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV,doub
       }
       TIntV WalkV;
       SimulateWalk(InNet, NIdsV[j], WalkLen, Rnd, WalkV);
-      
       for (int64 k = 0; k < WalkV.Len(); k++) { 
         WalksVV.PutXY(i*NIdsV.Len()+j, k, WalkV[k]);
       }

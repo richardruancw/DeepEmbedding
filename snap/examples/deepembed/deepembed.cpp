@@ -5,6 +5,7 @@
 #include "deeputils.h"
 #include "recoveredges.h"
 #include "linearinterpolation.h"
+#include "samplen2v.h"
 
 #ifdef USE_OPENMP
 #include <omp.h>
@@ -18,7 +19,6 @@ int main(int argc, char* argv[]) {
   bool Directed, Weighted, Verbose;
   ParseArgs(argc, argv, InFile, OutFile, Dimensions, WalkLen, NumWalks, WinSize,
    Iter, ShrinkFactor, Verbose, ParamP, ParamQ, Directed, Weighted);
-
 
   PWNet InNet = PWNet::New();
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
@@ -34,15 +34,35 @@ int main(int argc, char* argv[]) {
   TIntFltVH EmbeddingsHVForSample;
   TIntFltVH EmbeddingsHVForAll;
 
-  /* TO DO: 
+  /*
+    TO DO:  Learn Embedding for sample node
+    Option 1 - Consturct graph of representative nodes and run node2vec on top of it
+    Option 2 - Ran random walk on representative nodes and use face node id to replace non-representative nodes
+               found in random walk. (potential improvement: modify word2vec to emit pairs which contain the fake id)
 
-  Bowen:
+  */
+
+  //Option 1:
+  /*
   RecoverEdges(InNet, SampleNet, ...);
-
   node2vec(InNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
    Verbose, EmbeddingsHVForSample);
+   */
 
 
+    
+  // Option 2:
+  samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
+  Verbose, EmbeddingsHVForSample);
+  // Test samplenode2vec
+  WriteOutput(OutFile, EmbeddingsHVForSample);
+
+  
+
+  
+
+
+  /*
   Yue:
   LinearInterpolation(SampleNet, EmbeddingsHVForAll, EmbeddingsHVForSample, ...;
 
