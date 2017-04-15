@@ -63,8 +63,6 @@ void ReadGraph(TStr& InFile, bool& Directed, bool& Weighted, bool& Verbose, PWNe
   }
 }
 
-
-<<<<<<< Updated upstream
 void WriteOutput(TStr& OutFile, TIntFltVH& EmbeddingsHV) {
   TFOut FOut(OutFile);
   bool First = 1;
