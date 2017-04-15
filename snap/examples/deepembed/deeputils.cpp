@@ -64,6 +64,7 @@ void ReadGraph(TStr& InFile, bool& Directed, bool& Weighted, bool& Verbose, PWNe
 }
 
 
+<<<<<<< Updated upstream
 void WriteOutput(TStr& OutFile, TIntFltVH& EmbeddingsHV) {
   TFOut FOut(OutFile);
   bool First = 1;
@@ -85,7 +86,7 @@ void WriteOutput(TStr& OutFile, TIntFltVH& EmbeddingsHV) {
 }
 
 
-void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV,double& ParamP, double& ParamQ, 
+void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV, double& ParamP, double& ParamQ,
   int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose) {
   int64 AllWalks = WalksVV.GetXDim();
   TRnd Rnd(time(NULL));
