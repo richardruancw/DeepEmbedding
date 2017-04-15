@@ -4,6 +4,7 @@
 
 //Code from https://github.com/nicholas-leonard/word2vec/blob/master/word2vec.c
 //Customized for SNAP and node2vec
+namespace JumpWord2Vec {
 
 void LearnVocab(TVVec<TInt, int64>& WalksVV, TIntV& Vocab) {
   for( int64 i = 0; i < Vocab.Len(); i++) { Vocab[i] = 0; }
@@ -162,6 +163,7 @@ void LearnEmbeddings(TVVec<TInt, int64>& WalksVV, int& Dimensions, int& WinSize,
       }
     }
   }
+
   TIntV Vocab(NNodes);
   LearnVocab(WalksVV, Vocab);
   TIntV KTable(NNodes);
@@ -195,4 +197,6 @@ void LearnEmbeddings(TVVec<TInt, int64>& WalksVV, int& Dimensions, int& WinSize,
     for (int j = 0; j < SynPos.GetYDim(); j++) { CurrV[j] = SynPos(i, j); }
     EmbeddingsHV.AddDat(RnmBackH.GetDat(i), CurrV);
   }
+}
+
 }

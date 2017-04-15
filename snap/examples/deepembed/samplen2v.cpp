@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "n2v.h"
+#include "jumpword2vec.h"
 
 void samplenode2vec(PWNet& InNet, const THashSet<TInt>& RepresentativeNodes, double& ParamP, double& ParamQ, int& Dimensions,
  int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose,

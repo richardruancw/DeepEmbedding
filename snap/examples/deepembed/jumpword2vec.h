@@ -1,6 +1,8 @@
 #ifndef WORD_2_VEC_H
 #define WORD_2_VEC_H
 
+namespace JumpWord2Vec {
+
 ///Learns embeddings using SGD, Skip-gram with negative sampling.
 void LearnEmbeddings(TVVec<TInt, int64>& WalksVV, int& Dimensions, int& WinSize,
  int& Iter, bool& Verbose, TIntFltVH& EmbeddingsHV);
@@ -18,4 +20,7 @@ const int NegSamN = 5;
 //Learning rate for SGD. Value taken from original word2vec code.
 const double StartAlpha = 0.025;
 
+}
+
 #endif //WORD_2_VEC_H
+
