@@ -24,7 +24,6 @@ int main(int argc, char* argv[]) {
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
   // Prepare the graph for random walk
   PreprocessTransitionProbs(InNet, ParamP, ParamQ, Verbose);
-  PWNet SampleNet = PWNet::New();
 
   THashSet<TInt> RepresentativeNodes;
   TInt NumRepNodes =  InNet->GetNodes() / ShrinkFactor;
@@ -43,20 +42,21 @@ int main(int argc, char* argv[]) {
   */
 
   //Option 1:
-  
-  // RecoverEdges(InNet, SampleNet, RepresentativeNodes, 
-  //   ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
-  // node2vec(SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
-  //  Verbose, EmbeddingsHVForSample);
-  // WriteOutput(OutFile, EmbeddingsHVForSample);
+
+  PWNet SampleNet = PWNet::New();
+  RecoverEdges(InNet, SampleNet, RepresentativeNodes, 
+    ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+  node2vec(SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
+   Verbose, EmbeddingsHVForSample);
+  WriteOutput(OutFile, EmbeddingsHVForSample);
 
 
     
   // Option 2:
-  samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
-  Verbose, EmbeddingsHVForSample);
-  // Test samplenode2vec
-  WriteOutput(OutFile, EmbeddingsHVForSample);
+  // samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
+  // Verbose, EmbeddingsHVForSample);
+  // // Test samplenode2vec
+  // WriteOutput(OutFile, EmbeddingsHVForSample);
 
   
 
