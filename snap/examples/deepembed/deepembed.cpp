@@ -30,10 +30,7 @@ int main(int argc, char* argv[]) {
   TInt NumRepNodes =  InNet->GetNodes() / ShrinkFactor;
   SelectRepresentativeNodes(InNet, RepresentativeNodes, NumRepNodes, ParamP, ParamQ, 
   Dimensions, WalkLen, NumWalks, Iter, Verbose);
-
   TIntFltVH EmbeddingsHVForSample;
-  TIntFltVH EmbeddingsHVForAll;
-
   /*
     TO DO:  Learn Embedding for sample node
     Option 1 - Consturct graph of representative nodes and run node2vec on top of it
@@ -42,50 +39,33 @@ int main(int argc, char* argv[]) {
 
   */
 
-  //Option 1:
+  //Option 1: 
+  // PWNet SampleNet = PWNet::New();
+  // RecoverEdges(InNet, SampleNet, RepresentativeNodes, 
+  //   ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+  // node2vec(SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
+  //  Verbose, EmbeddingsHVForSample);
 
-  
-  PWNet SampleNet = PWNet::New();
-  RecoverEdges(InNet, SampleNet, RepresentativeNodes, 
-    ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
-  node2vec(SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
-   Verbose, EmbeddingsHVForSample);
-  TIntV Unsettled;
-  LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, Unsettled,
-    ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
-  printf("finishied!\n");
-  printf("Unsettled: %d\n", Unsettled.Len());
-  printf("Settled: %d\n", EmbeddingsHVForAll.Len());
-  WriteOutput(OutFile, EmbeddingsHVForAll);
-  WriteOutput(OutFile, EmbeddingsHVForSample);
+  // //Interpolation
+  // TIntFltVH EmbeddingsHVForAll = TIntFltVH(EmbeddingsHVForSample);
+  // int TotalRound = 5;
+  // LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, TotalRound,
+  //   ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+  // WriteOutput(OutFile, EmbeddingsHVForAll);
   
 
 
     
   // Option 2:
-  // samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
-  //   Verbose, EmbeddingsHVForSample);
-  // // Test samplenode2vec
-  // // WriteOutput(OutFile, EmbeddingsHVForSample);
-  // printf("finishied!\n");
-  /*
-   samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, EmbeddingsHVForSample);
-  // // Test samplenode2vec
+  samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
+    Verbose, EmbeddingsHVForSample);
 
-   WriteOutput(OutFile, EmbeddingsHVForSample);
-   */
-
-  
-
-  
-  // TIntV Unsettled;
-  // LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, Unsettled,
-  //   ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
-  // printf("finishied!\n");
-  // printf("Unsettled: %d\n", Unsettled.Len());
-  // printf("Settled: %d\n", EmbeddingsHVForAll.Len());
-
-  // WriteOutput(OutFile, EmbeddingsHVForAll);
+  //Interpolation
+  TIntFltVH EmbeddingsHVForAll = TIntFltVH(EmbeddingsHVForSample);
+  int TotalRound = 5;
+  LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, TotalRound,
+    ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+  WriteOutput(OutFile, EmbeddingsHVForAll);
 
   return 0;
 }

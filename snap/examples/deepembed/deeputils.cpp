@@ -20,7 +20,7 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
   WinSize = Env.GetIfArgPrefixInt("-k:", 10,
    "Context size for optimization. Default is 10");
   ShrinkFactor = Env.GetIfArgPrefixInt("-s:", 100,
-   "Shrink factor of nodes number. Default is 10");
+   "Shrink factor of nodes number. Default is 100");
   Iter = Env.GetIfArgPrefixInt("-e:", 1,
    "Number of epochs in SGD. Default is 1");
   ParamP = Env.GetIfArgPrefixFlt("-p:", 1,
