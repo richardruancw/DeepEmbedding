@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "n2v.h"
 
+#include <vector>
+#include <algorithm>
+
 
 void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
  int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& ShrinkFactor,
@@ -141,9 +144,25 @@ void SelectRepresentativeNodes(PWNet& InNet, THashSet<TInt>& RepresentativeNodes
   TIntFltH MetricCounter;
   ComputeMetricsForNodes(InNet, WalksVV, MetricCounter);
 
-  // Sort the nodes in decesending order w.r.t their value
-  MetricCounter.SortByDat(false);
+  std::vector<TFlt> MetricVector;
+  for(TIntFltH::TIter ThashIter = MetricCounter.BegI(); ThashIter < MetricCounter.EndI(); ThashIter++) {
+    MetricVector.push_back((*ThashIter).Dat);
+  }
 
+  // Only select top NodeNum of nodes as representative nodes
+  std::nth_element(MetricVector.begin(), MetricVector.begin() + (NIdsV.Len() - NodeNum), MetricVector.end());
+  TFlt MetricThreshold = MetricVector[(NIdsV.Len() - NodeNum)];
+
+  for(TIntFltH::TIter ThashIter = MetricCounter.BegI(); ThashIter < MetricCounter.EndI(); ThashIter++) {
+    if((*ThashIter).Dat < MetricThreshold) {continue;}
+    RepresentativeNodes.AddKey((*ThashIter).Key);
+  }
+
+  printf("Number of selected nodes: %d\n", RepresentativeNodes.Len());
+
+  // Sort the nodes in decesending order w.r.t their value
+  /*
+  MetricCounter.SortByDat(false);
   TInt count = 0;
   for(TIntFltH::TIter ThashIter = MetricCounter.BegI(); ThashIter < MetricCounter.EndI(); ThashIter++) {
     if(count > NodeNum) {
@@ -153,6 +172,7 @@ void SelectRepresentativeNodes(PWNet& InNet, THashSet<TInt>& RepresentativeNodes
       RepresentativeNodes.AddKey((*ThashIter).Key);
     }
   }
+  */
 }
 
 
