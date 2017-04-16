@@ -48,30 +48,31 @@ int main(int argc, char* argv[]) {
     ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
   node2vec(SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
    Verbose, EmbeddingsHVForSample);
-  WriteOutput(OutFile, EmbeddingsHVForSample);
+  TIntV Unsettled;
+  LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, Unsettled,
+    ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+  printf("finishied!\n");
+  printf("Unsettled: %d\n", Unsettled.Len());
+  printf("Settled: %d\n", EmbeddingsHVForAll.Len());
+  WriteOutput(OutFile, EmbeddingsHVForAll);
 
 
     
   // Option 2:
   // samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
-  // Verbose, EmbeddingsHVForSample);
+  //   Verbose, EmbeddingsHVForSample);
   // // Test samplenode2vec
-  // WriteOutput(OutFile, EmbeddingsHVForSample);
+  // // WriteOutput(OutFile, EmbeddingsHVForSample);
+  // printf("finishied!\n");
 
-  
+  // TIntV Unsettled;
+  // LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, Unsettled,
+  //   ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+  // printf("finishied!\n");
+  // printf("Unsettled: %d\n", Unsettled.Len());
+  // printf("Settled: %d\n", EmbeddingsHVForAll.Len());
 
-  
-
-
-  /*
-  Yue:
-  LinearInterpolation(SampleNet, EmbeddingsHVForAll, EmbeddingsHVForSample, ...;
-
-  WriteOutput(OutFile, EmbeddingsHVForAll);
-  */
-
-  TestLINEARINTERPOLATION();
-  TestRECOVEREDGES();
+  // WriteOutput(OutFile, EmbeddingsHVForAll);
 
   return 0;
 }
