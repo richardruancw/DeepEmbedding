@@ -50,7 +50,7 @@ void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFlt
 			Count.AddDat(NI.GetId()) = 0;
 		}
 	  	for (int64 i = 0; i < NumWalks; i++) {
-			// #pragma omp parallel for schedule(dynamic)
+			#pragma omp parallel for schedule(dynamic)
 			for(TIntFltVH::TIter THashIter = Srcs.BegI(); THashIter < Srcs.EndI(); THashIter++){
 				TIntV WalkV;
 	      		SimulateWalk(InNet, (*THashIter).Key, WalkLen, Rnd, WalkV);
@@ -63,7 +63,7 @@ void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFlt
 			}
 		}
 
-		// #pragma omp parallel for schedule(dynamic)
+		#pragma omp parallel for schedule(dynamic)
 		for(TIntFltVH::TIter THashIter = Srcs.BegI(); THashIter < Srcs.EndI(); THashIter++){
 	  		if(Count((*THashIter).Key) == 0){	// If visited no settled node at all
 	  			continue;
