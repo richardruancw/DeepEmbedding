@@ -4,10 +4,9 @@
 
 /* Parse the input from command line
  */
-void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, int& Dimensions, int& WalkLen, 
-	int& NumWalks, int& WinSize, int& Iter, bool& Verbose, double& ParamP, double& ParamQ, bool& Directed, 
-	bool& Weighted);
-
+void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
+ int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& ShrinkFactor,
+ bool& Verbose, double& ParamP, double& ParamQ, bool& Directed, bool& Weighted);
 
 /* Read the graph from edgelist file
  * @pre InNet = InNet.clear()
@@ -33,6 +32,13 @@ void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV,doub
   int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose);
 
 
-void ComputeMetricsForNodes(const PWNet& InNet, const TVVec<TInt, int64>& WalksVV, TIntFltH MetricCounter);
+void WriteOutput(TStr& OutFile, TIntFltVH& EmbeddingsHV);
+
+
+
+void ComputeMetricsForNodes(const PWNet& InNet, const TVVec<TInt, int64>& WalksVV, TIntFltH& MetricCounter);
+
+void SelectRepresentativeNodes(PWNet& InNet, THashSet<TInt>& RepresentativeNodes, TInt NodeNum, 
+  double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose);
 
 #endif //DEEPUTILIS_H

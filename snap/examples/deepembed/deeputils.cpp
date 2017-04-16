@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "n2v.h"
 
+#include <vector>
+#include <algorithm>
+
 
 void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
- int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter,
+ int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& ShrinkFactor,
  bool& Verbose, double& ParamP, double& ParamQ, bool& Directed, bool& Weighted) {
   Env = TEnv(argc, argv, TNotify::StdNotify);
   Env.PrepArgs(TStr::Fmt("\nAn algorithmic framework for representational learning on graphs."));
@@ -19,6 +22,8 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
    "Number of walks per source. Default is 10");
   WinSize = Env.GetIfArgPrefixInt("-k:", 10,
    "Context size for optimization. Default is 10");
+  ShrinkFactor = Env.GetIfArgPrefixInt("-s:", 100,
+   "Shrink factor of nodes number. Default is 100");
   Iter = Env.GetIfArgPrefixInt("-e:", 1,
    "Number of epochs in SGD. Default is 1");
   ParamP = Env.GetIfArgPrefixFlt("-p:", 1,
@@ -61,8 +66,28 @@ void ReadGraph(TStr& InFile, bool& Directed, bool& Weighted, bool& Verbose, PWNe
   }
 }
 
+void WriteOutput(TStr& OutFile, TIntFltVH& EmbeddingsHV) {
+  TFOut FOut(OutFile);
+  bool First = 1;
+  for (int i = EmbeddingsHV.FFirstKeyId(); EmbeddingsHV.FNextKeyId(i);) {
+    if (First) {
+      FOut.PutInt(EmbeddingsHV.Len());
+      FOut.PutCh(' ');
+      FOut.PutInt(EmbeddingsHV[i].Len());
+      FOut.PutLn();
+      First = 0;
+    }
+    FOut.PutInt(EmbeddingsHV.GetKey(i));
+    for (int64 j = 0; j < EmbeddingsHV[i].Len(); j++) {
+      FOut.PutCh(' ');
+      FOut.PutFlt(EmbeddingsHV[i][j]);
+    }
+    FOut.PutLn();
+  }
+}
 
-void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV,double& ParamP, double& ParamQ, 
+
+void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV, double& ParamP, double& ParamQ,
   int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose) {
   int64 AllWalks = WalksVV.GetXDim();
   TRnd Rnd(time(NULL));
@@ -76,7 +101,6 @@ void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV,doub
       }
       TIntV WalkV;
       SimulateWalk(InNet, NIdsV[j], WalkLen, Rnd, WalkV);
-      
       for (int64 k = 0; k < WalkV.Len(); k++) { 
         WalksVV.PutXY(i*NIdsV.Len()+j, k, WalkV[k]);
       }
@@ -89,7 +113,7 @@ void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV,doub
   }
 }
 
-void ComputeMetricsForNodes(const PWNet& InNet, const TVVec<TInt, int64>& WalksVV, TIntFltH MetricCounter) {
+void ComputeMetricsForNodes(const PWNet& InNet, const TVVec<TInt, int64>& WalksVV, TIntFltH& MetricCounter) {
   for (int64 i = 0; i < WalksVV.GetXDim(); i++) {
     for (int64 j = 0; j < WalksVV.GetYDim(); j++) {
       if ( MetricCounter.IsKey(WalksVV(i, j)) ) {
@@ -103,3 +127,65 @@ void ComputeMetricsForNodes(const PWNet& InNet, const TVVec<TInt, int64>& WalksV
     (*ThashIter).Dat /= InNet->GetNI((*ThashIter).Key).GetDeg();
   }
 }
+
+
+void SelectRepresentativeNodes(PWNet& InNet, THashSet<TInt>& RepresentativeNodes, TInt NodeNum, 
+  double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose) {
+
+  TIntV NIdsV;
+  for (TWNet::TNodeI NI = InNet->BegNI(); NI < InNet->EndNI(); NI++) {
+    NIdsV.Add(NI.GetId());
+  }
+
+  int64 AllWalks = (int64)NumWalks * NIdsV.Len();
+  TVVec<TInt, int64> WalksVV(AllWalks,WalkLen);
+  GetRandomWalks(InNet, WalksVV, NIdsV, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+
+  TIntFltH MetricCounter;
+  ComputeMetricsForNodes(InNet, WalksVV, MetricCounter);
+
+  std::vector<TFlt> MetricVector;
+  for(TIntFltH::TIter ThashIter = MetricCounter.BegI(); ThashIter < MetricCounter.EndI(); ThashIter++) {
+    MetricVector.push_back((*ThashIter).Dat);
+  }
+
+  // Only select top NodeNum of nodes as representative nodes
+  std::nth_element(MetricVector.begin(), MetricVector.begin() + (NIdsV.Len() - NodeNum), MetricVector.end());
+  TFlt MetricThreshold = MetricVector[(NIdsV.Len() - NodeNum)];
+
+  for(TIntFltH::TIter ThashIter = MetricCounter.BegI(); ThashIter < MetricCounter.EndI(); ThashIter++) {
+    if((*ThashIter).Dat < MetricThreshold) {continue;}
+    RepresentativeNodes.AddKey((*ThashIter).Key);
+  }
+
+  printf("Number of selected nodes: %d\n", RepresentativeNodes.Len());
+
+  // Sort the nodes in decesending order w.r.t their value
+  /*
+  MetricCounter.SortByDat(false);
+  TInt count = 0;
+  for(TIntFltH::TIter ThashIter = MetricCounter.BegI(); ThashIter < MetricCounter.EndI(); ThashIter++) {
+    if(count > NodeNum) {
+      break;
+    } else {
+      count++;
+      RepresentativeNodes.AddKey((*ThashIter).Key);
+    }
+  }
+  */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

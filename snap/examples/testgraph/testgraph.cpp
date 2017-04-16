@@ -169,9 +169,6 @@ int main(int argc, char* argv[]) {
 
   LinearInterpolation(InNet, EmbeddingsHVForAll, EmbeddingsHVForSample, 
     NIdsV, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
-
-
-  WriteOutput(...);
   
   return 0;
 }
