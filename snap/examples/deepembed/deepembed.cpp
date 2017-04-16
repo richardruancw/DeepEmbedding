@@ -7,6 +7,7 @@
 #include "linearinterpolation.h"
 #include "samplen2v.h"
 
+
 #ifdef USE_OPENMP
 #include <omp.h>
 #endif
@@ -43,11 +44,13 @@ int main(int argc, char* argv[]) {
 
   //Option 1:
 
+  
   PWNet SampleNet = PWNet::New();
   RecoverEdges(InNet, SampleNet, RepresentativeNodes, 
     ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
   node2vec(SampleNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
    Verbose, EmbeddingsHVForSample);
+<<<<<<< HEAD
   TIntV Unsettled;
   LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, Unsettled,
     ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
@@ -55,15 +58,33 @@ int main(int argc, char* argv[]) {
   printf("Unsettled: %d\n", Unsettled.Len());
   printf("Settled: %d\n", EmbeddingsHVForAll.Len());
   WriteOutput(OutFile, EmbeddingsHVForAll);
+=======
+  WriteOutput(OutFile, EmbeddingsHVForSample);
+  
+>>>>>>> origin/master
 
 
     
   // Option 2:
+<<<<<<< HEAD
   // samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, 
   //   Verbose, EmbeddingsHVForSample);
   // // Test samplenode2vec
   // // WriteOutput(OutFile, EmbeddingsHVForSample);
   // printf("finishied!\n");
+=======
+  /*
+   samplenode2vec(InNet, RepresentativeNodes, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, EmbeddingsHVForSample);
+  // // Test samplenode2vec
+
+   WriteOutput(OutFile, EmbeddingsHVForSample);
+   */
+
+  
+
+  
+
+>>>>>>> origin/master
 
   // TIntV Unsettled;
   // LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, Unsettled,
