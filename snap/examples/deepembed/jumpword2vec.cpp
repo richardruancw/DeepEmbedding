@@ -111,7 +111,7 @@ namespace JumpWord2Vec {
       WordCntAll++;
 
       int64 Word = WalkV[WordI];
-      if (Word == NewFakeWord)
+      if (Word == NewFakeWord) {continue;}
 
       for (int i = 0; i < Dimensions; i++) {
         Neu1V[i] = 0;
