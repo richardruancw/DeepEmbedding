@@ -47,7 +47,7 @@ void samplenode2vec(PWNet& InNet, const THashSet<TInt>& RepresentativeNodes, dou
     fflush(stdout);
   }
   //Learning embeddings
-  LearnEmbeddings(WalksVV, Dimensions, WinSize, Iter, Verbose, EmbeddingsHV);
+  JumpWord2Vec::LearnEmbeddings(WalksVV, Dimensions, WinSize, Iter, Verbose, EmbeddingsHV, FakeNodeId);
   //Delete embedding for the fake node
   EmbeddingsHV.DelKey(FakeNodeId);
 }
