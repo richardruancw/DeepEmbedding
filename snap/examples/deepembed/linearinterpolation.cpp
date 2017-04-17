@@ -41,6 +41,7 @@ void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFlt
 
 		TIntIntH Count;
 		TIntFltVH Srcs;
+		TIntV Ids;
 		TRnd Rnd(time(NULL));
 		for(TWNet::TNodeI NI = InNet->BegNI(); NI < InNet->EndNI(); NI++){
 			if(EmbeddingsHVForAll.IsKey(NI.GetId())){
@@ -48,27 +49,28 @@ void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFlt
 			}
 			Srcs.AddDat(NI.GetId()) = TFltV(Dimensions);
 			Count.AddDat(NI.GetId()) = 0;
+			Ids.Add(NI.GetId());
 		}
 	  	for (int64 i = 0; i < NumWalks; i++) {
 			#pragma omp parallel for schedule(dynamic)
-			for(TIntFltVH::TIter THashIter = Srcs.BegI(); THashIter < Srcs.EndI(); THashIter++){
+			for(int64 j = 0; j < Ids.Len(); j++){
 				TIntV WalkV;
-	      		SimulateWalk(InNet, (*THashIter).Key, WalkLen, Rnd, WalkV);
+	      		SimulateWalk(InNet, Ids[j], WalkLen, Rnd, WalkV);
 	      		for(int k = 0; k < WalkV.Len(); k++){
 	      			if(EmbeddingsHVForAll.IsKey(WalkV[k])){ // If the visited node is settled
-      					(*THashIter).Dat = AddVectors((*THashIter).Dat, EmbeddingsHVForAll(WalkV[k]));
-      					Count((*THashIter).Key) += 1;
+      					Srcs(Ids[j]) = AddVectors(Srcs(Ids[j]), EmbeddingsHVForAll(WalkV[k]));
+      					Count(Ids[j]) += 1;
 	      			}// Else do nothing
 	      		}
 			}
 		}
 
 		#pragma omp parallel for schedule(dynamic)
-		for(TIntFltVH::TIter THashIter = Srcs.BegI(); THashIter < Srcs.EndI(); THashIter++){
-	  		if(Count((*THashIter).Key) == 0){	// If visited no settled node at all
+		for(int64 j = 0; j < Ids.Len(); j++){
+	  		if(Count(Ids[j]) == 0){	// If visited no settled node at all
 	  			continue;
 	  		}else{	// Else take the average
-	  			EmbeddingsHVForAll((*THashIter).Key) = RefactorVector((*THashIter).Dat, Count((*THashIter).Key));
+	  			EmbeddingsHVForAll.AddDat(Ids[j]) = RefactorVector(Srcs(Ids[j]), Count(Ids[j]));
 	  		}
 		}
 	}
