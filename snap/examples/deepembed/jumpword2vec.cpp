@@ -111,7 +111,7 @@ namespace JumpWord2Vec {
       WordCntAll++;
 
       int64 Word = WalkV[WordI];
-      if (Word == NewFakeWord)
+      if (Word == NewFakeWord) {continue;}
 
       for (int i = 0; i < Dimensions; i++) {
         Neu1V[i] = 0;
@@ -210,6 +210,7 @@ namespace JumpWord2Vec {
     if (Verbose) { printf("\n"); fflush(stdout); }
     for (int64 i = 0; i < SynPos.GetXDim(); i++) {
       TFltV CurrV(SynPos.GetYDim());
+      if (RnmBackH.GetDat(i) == FakeNodeId) {printf("Jumped a fake node!!! \n"); continue;}
       for (int j = 0; j < SynPos.GetYDim(); j++) { CurrV[j] = SynPos(i, j); }
       EmbeddingsHV.AddDat(RnmBackH.GetDat(i), CurrV);
     }

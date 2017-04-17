@@ -22,3 +22,14 @@ Move to snap folder, and complie using provided makefiles
 ```shell
 make all
 ```
+
+If use ``CentOS7``, run the following commands
+
+```
+sudo yum install git
+sudo yum install make
+sudo yum groupinstall 'Development Tools'
+git clone https://github.com/richardruancw/DeepEmbedding.git
+cd DeepEmbeddeding/snap
+make all
+```

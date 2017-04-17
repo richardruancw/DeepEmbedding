@@ -21,61 +21,63 @@ TFltV RefactorVector(TFltV& v1, TInt& factor){
 void TestLINEARINTERPOLATION() {
 }
 
-void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, TIntV& Unsettled,
+void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, int& TotalRound,
 	double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose){
 
-	TIntIntH Count;
-	TIntV Srcs;
-	TRnd Rnd(time(NULL));
-	printf("%d\n", InNet->GetNodes());
-	for(TWNet::TNodeI NI = InNet->BegNI(); NI < InNet->EndNI(); NI++){
-		Srcs.Add(NI.GetId());
-	}
-  	for (int64 i = 0; i < NumWalks; i++) {
-  		printf("Round: %d\n", i);
-  		printf("Len of Srcs: %d\n", Srcs.Len());
-		// #pragma omp parallel for schedule(dynamic)
-		for(int64 j = 0; j < Srcs.Len(); j++){
-			if(EmbeddingsHVForSample.IsKey(Srcs[j])){ // If the node itself is a representative
-				EmbeddingsHVForAll.AddDat(Srcs[j]) = TFltV(EmbeddingsHVForSample(Srcs[j]));
+	int64 Settled;
+	int64 Unsettled;
+	int64 TotalNodes = InNet->GetNodes();
+	int Round = 0;
+
+	while(Round < TotalRound){
+		Round += 1;
+		Settled = EmbeddingsHVForAll.Len();
+		Unsettled = TotalNodes - Settled;
+		printf("Begin round %d out of %d\n", Round, TotalRound);
+		printf("Already settled %d out of %d, the portion is %f\n", 
+			Settled, TotalNodes, (float)Settled / (float)TotalNodes );
+		printf("Remain unsettled %d out of %d, the portion is %f\n", 
+			Unsettled, TotalNodes, (float)Unsettled / (float)TotalNodes );
+
+		TIntIntH Count;
+		TIntFltVH Srcs;
+		TIntV Ids;
+		TRnd Rnd(time(NULL));
+		for(TWNet::TNodeI NI = InNet->BegNI(); NI < InNet->EndNI(); NI++){
+			if(EmbeddingsHVForAll.IsKey(NI.GetId())){
+				continue;
 			}
-			else{ // Else do the interpolation
+			Srcs.AddDat(NI.GetId()) = TFltV(Dimensions);
+			Count.AddDat(NI.GetId()) = 0;
+			Ids.Add(NI.GetId());
+		}
+	  	for (int64 i = 0; i < NumWalks; i++) {
+			#pragma omp parallel for schedule(dynamic)
+			for(int64 j = 0; j < Ids.Len(); j++){
 				TIntV WalkV;
-	      		SimulateWalk(InNet, Srcs[j], WalkLen, Rnd, WalkV);
+	      		SimulateWalk(InNet, Ids[j], WalkLen, Rnd, WalkV);
 	      		for(int k = 0; k < WalkV.Len(); k++){
-	      			if(EmbeddingsHVForSample.IsKey(WalkV[k])){ // If the visited node is a representative node
-	      				if(EmbeddingsHVForAll.IsKey(Srcs[j])){
-	      					EmbeddingsHVForAll(Srcs[j]) = AddVectors(EmbeddingsHVForAll(Srcs[j]), EmbeddingsHVForSample(WalkV[k]));
-	      					Count(Srcs[j]) += 1;
-	      				}
-	      				else{
-	      					EmbeddingsHVForAll.AddDat(Srcs[j]) = TFltV(EmbeddingsHVForSample(WalkV[k]));
-	      					Count.AddDat(Srcs[j]) = 1;
-	      				}
+	      			if(EmbeddingsHVForAll.IsKey(WalkV[k])){ // If the visited node is settled
+      					Srcs(Ids[j]) = AddVectors(Srcs(Ids[j]), EmbeddingsHVForAll(WalkV[k]));
+      					Count(Ids[j]) += 1;
 	      			}// Else do nothing
 	      		}
 			}
 		}
-	}
 
-	// #pragma omp parallel for schedule(dynamic)
-	int bad = 0;
-	int good = 0;
-	for(int64 j = 0; j < Srcs.Len(); j++){
-		if(EmbeddingsHVForSample.IsKey(Srcs[j])){
-			good += 1;
-			continue;
+		for(int64 j = 0; j < Ids.Len(); j++){
+	  		if(Count(Ids[j]) == 0){	// If visited no settled node at all
+	  			continue;
+	  		}else{	// Else take the average
+	  			EmbeddingsHVForAll.AddDat(Ids[j]) = RefactorVector(Srcs(Ids[j]), Count(Ids[j]));
+	  		}
 		}
-  		if(Count(Srcs[j]) == 0){	// If visited no representative node at all
-  			bad += 1;
-  			Unsettled.Add(Srcs[j]);
-  		}else{	// Else take the average
-  			good += 1;
-  			EmbeddingsHVForAll.GetDat(Srcs[j]) = RefactorVector(EmbeddingsHVForAll.GetDat(Srcs[j]), Count.GetDat(Srcs[j]));
-  		}
 	}
-	printf("Bad: %d\n", bad);
-	printf("Good: %d\n", good);
+	printf("All rounds finished\n");
+	printf("Already settled %d out of %d, the portion is %f\n", 
+		Settled, TotalNodes, (float)Settled / (float)TotalNodes );
+	printf("Remain unsettled %d out of %d, the portion is %f\n", 
+		Unsettled, TotalNodes, (float)Unsettled / (float)TotalNodes );
 }
  
 

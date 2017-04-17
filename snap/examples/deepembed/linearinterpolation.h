@@ -3,7 +3,7 @@
 
 void TestLINEARINTERPOLATION();
 
-void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, TIntV& Unsettled,
+void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, int& TotalRound,
 	double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose);
 
 TFltV AddVectors(TFltV& v1, TFltV& v2);
