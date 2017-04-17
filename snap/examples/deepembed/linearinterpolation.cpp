@@ -65,7 +65,6 @@ void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFlt
 			}
 		}
 
-		#pragma omp parallel for schedule(dynamic)
 		for(int64 j = 0; j < Ids.Len(); j++){
 	  		if(Count(Ids[j]) == 0){	// If visited no settled node at all
 	  			continue;
