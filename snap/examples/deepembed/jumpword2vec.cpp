@@ -210,6 +210,7 @@ namespace JumpWord2Vec {
     if (Verbose) { printf("\n"); fflush(stdout); }
     for (int64 i = 0; i < SynPos.GetXDim(); i++) {
       TFltV CurrV(SynPos.GetYDim());
+      if (RnmBackH.GetDat(i) == FakeNodeId) {printf("Jumped a fake node!!! \n"); continue;}
       for (int j = 0; j < SynPos.GetYDim(); j++) { CurrV[j] = SynPos(i, j); }
       EmbeddingsHV.AddDat(RnmBackH.GetDat(i), CurrV);
     }
