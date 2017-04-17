@@ -30,6 +30,6 @@ sudo yum install git
 sudo yum install make
 sudo yum groupinstall 'Development Tools'
 git clone https://github.com/richardruancw/DeepEmbedding.git
-cd DeepEmbeddeding/snap
+cd DeepEmbedding/snap/examples/deepembed/
 make all
 ```
