@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
       TIntFltVH EmbeddingsHVForAll = TIntFltVH(EmbeddingsHVForSample);
       int TotalRound = 5;
       LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, TotalRound,
-      ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+      ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, WinSize, Verbose);
       WriteOutput(OutFile, EmbeddingsHVForAll);
     } else if(Option == 2) {
       printf("\n Start running recover edges version !!\n");
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
       TIntFltVH EmbeddingsHVForAll = TIntFltVH(EmbeddingsHVForSample);
       int TotalRound = 5;
       LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, TotalRound,
-      ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+      ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, WinSize, Verbose);
       WriteOutput(OutFile, EmbeddingsHVForAll);
     } else {
       printf("\n Start running original node2vec !!\n");
