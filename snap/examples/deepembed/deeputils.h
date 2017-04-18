@@ -4,8 +4,8 @@
 
 /* Parse the input from command line
  */
-void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
- int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& ShrinkFactor,
+void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, int& Option,
+ int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, double& ShrinkFactor,
  bool& Verbose, double& ParamP, double& ParamQ, bool& Directed, bool& Weighted);
 
 /* Read the graph from edgelist file
