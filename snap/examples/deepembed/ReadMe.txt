@@ -1,5 +1,5 @@
 ========================================================================
-    TestGraph: simple application 
+    DeepEmbedding: Super Large Scale Deepembedding 
 ========================================================================
 
 The application demonstrates some of the basic functionality of the
@@ -13,6 +13,21 @@ and makefiles are provided. For makefiles, compile the code with
 
 /////////////////////////////////////////////////////////////////////////////
 Parameters:
-
+InFile - Input graph path
+OutFile - Output graph path
+Option - 
+        Algorithm option. 1: sampledn2v, 2: recover edges, any other number: origin node2vec.
+Dimensions - Number of dimensions. Default is 128.
+WalkLen - Length of walk per source. Default is 80
+NumWalks - Number of walks per source. Default is 10
+WinSize - Context size for optimization. Default is 10
+ShrinkFactor - Shrink factor of nodes number. Default is 100
+Iter - Number of epochs in SGD. Default is 1
+ParamP - Return hyperparameter. Default is 1
+ParamQ - Inout hyperparameter. Default is 1
+Verbose - "-v", Verbose output
+Directed - "-dr" Graph is directed
+  Weighted - "-w" Graph is weighted
 /////////////////////////////////////////////////////////////////////////////
 Usage:
+./deepembed -i:graph/facebook_combined.edgelist -o:karate.emb -l:10 -d:24 -p:0.3  -q:0.5 -v -s:1.5 -option:1
