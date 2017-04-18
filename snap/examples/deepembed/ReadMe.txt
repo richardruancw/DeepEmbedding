@@ -2,8 +2,11 @@
     DeepEmbedding: Super Large Scale Deepembedding 
 ========================================================================
 
-The application demonstrates some of the basic functionality of the
-SNAP library.
+The application implements super large scale embedding learning algorithm
+for large networks with number of nodes up to 1 billion. This algorithm is 
+still under development.
+
+Author(without order): Bowen Yao, Chuanwei Ruan, Yue Liu 
 
 The code works under Windows with Visual Studio or Cygwin with GCC,
 Mac OS X, Linux and other Unix variants with GCC. Make sure that a
