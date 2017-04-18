@@ -9,8 +9,8 @@ path and batch size need to be re-specified
 
 """
 data_path = "data/"
-batch_size_train = 10000
-batch_size_test = 10000
+batch_size_train = int(input("batch size?"))
+# batch_size_test = 10000
 d = 24
 num_embeddings = 300
 
@@ -20,10 +20,15 @@ embedding format: (id em[1] em[2] ...)
 
 """
 
-def load_train_test(data_path):
+def load_train_test(data_path, our_embedding = True):
 	train = np.loadtxt(os.path.join(data_path,"train0"))
 	test = np.loadtxt(os.path.join(data_path,"test0"))
-	embeddings = np.loadtxt(os.path.join(data_path,"embedding0"), skiprows = 1)
+	batch_size_test = test.shape[0]
+	if our_embedding:
+		embeddings = np.loadtxt(os.path.join(data_path,"embedding0"), skiprows = 1)
+	else:
+		embeddings = np.loadtxt(os.path.join(data_path,"Origin"), skiprows = 1)
+
 	embedding_map = {}
 
 	for i in xrange(embeddings.shape[0]):
@@ -38,7 +43,7 @@ def load_train_test(data_path):
 	test_x = test[:,:test.shape[1]-1]
 	test_y = test[:,test.shape[1]-1]
 
-	return train_x, train_y, test_x, test_y, embedding_map
+	return train_x, train_y, test_x, test_y, embedding_map, batch_size_test
 
 def giveBatchIndices(batchSize, nRows):
     indices = range(nRows)
@@ -102,17 +107,12 @@ def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_m
 
 
 def train_and_test(data_path):
-	train_x, train_y, test_x, test_y, embedding_map = load_train_test(data_path)
+	train_x, train_y, test_x, test_y, embedding_map, batch_size_test = load_train_test(data_path)
 	model = SGDClassifier()
 
 	indices_bag_train = giveBatchIndices(batch_size_train, train_x.shape[0])
 	indices_bag_test = giveBatchIndices(batch_size_test, test_x.shape[0])
-	
-	# embeddings_data = np.loadtxt(os.path.join(data_path, "embeddings"))
-	# node_ids = embeddings_data[:,0].astype(int)
-	# node_embeddings = embeddings_data[:,1:]
-	# embeddings = np.zeros((embeddings_data.shape[0], embeddings_data.shape[1]-1))
-	# embeddings[node_ids,:] = node_embeddings
+
 	for i in xrange(len(indices_bag_train)):
 		for j in xrange(len(indices_bag_test)):
 			train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_map, indices_bag_train[i], indices_bag_test[j])
