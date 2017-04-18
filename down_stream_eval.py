@@ -8,9 +8,9 @@ path and batch size need to be re-specified
 
 
 """
-data_path = ""
-batch_size_train = 1000
-batch_size_test = 1000
+data_path = "data/"
+batch_size_train = 10000
+batch_size_test = 10000
 d = 24
 num_embeddings = 300
 
@@ -21,9 +21,9 @@ embedding format: (id em[1] em[2] ...)
 """
 
 def load_train_test(data_path):
-	train = np.loadtxt(os.path.join(data_path,"train"))
-	test = np.loadtxt(os.path.join(data_path,"test"))
-	embeddings = np.loadtxt(os.path.join(data_path,"embeddings"), skiprows = 1)
+	train = np.loadtxt(os.path.join(data_path,"train0"))
+	test = np.loadtxt(os.path.join(data_path,"test0"))
+	embeddings = np.loadtxt(os.path.join(data_path,"embedding0"), skiprows = 1)
 	embedding_map = {}
 
 	for i in xrange(embeddings.shape[0]):
@@ -53,31 +53,41 @@ def giveBatchIndices(batchSize, nRows):
 def get_batch_features(train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test):
 
 	train_ids = train_x[batch_indices_train,:].astype(int)
-	train_labels = train_y[batch_indices_train]
+	train_label_np = train_y[batch_indices_train]
 
 	test_ids = test_x[batch_indices_test,:].astype(int)
-	test_labels = test_y[batch_indices_test]
+	test_label_np = test_y[batch_indices_test]
 
 	vecs1_train = []
 	vecs2_train = []
+	train_labels = []
 	for i in xrange(train_ids.shape[0]):
-		vecs1_train.append(embedding_map[train_ids[i,0]])
-		vecs2_train.append(embedding_map[train_ids[i,1]])
+		if train_ids[i,0] in embedding_map and train_ids[i,1] in embedding_map:
+			vecs1_train.append(embedding_map[train_ids[i,0]])
+			vecs2_train.append(embedding_map[train_ids[i,1]])
+			train_labels.append(train_label_np[i])
+
 	vecs1_train = np.array(vecs1_train)
 	vecs2_train = np.array(vecs2_train)
+	train_labels = np.array(train_labels)
 
 	vecs1_test = []
 	vecs2_test = []
+	test_labels = []
 	for i in xrange(test_ids.shape[0]):
-		vecs1_test.append(embedding_map[test_ids[i,0]])
-		vecs2_test.append(embedding_map[test_ids[i,1]])
+		if test_ids[i,0] in embedding_map and test_ids[i,1] in embedding_map:
+			vecs1_test.append(embedding_map[test_ids[i,0]])
+			vecs2_test.append(embedding_map[test_ids[i,1]])
+			test_labels.append(test_label_np[i])
+
 	vecs1_test = np.array(vecs1_test)
 	vecs2_test = np.array(vecs2_test)
-
+	test_labels = np.array(test_labels)
+	
 	train_features = np.sum(vecs1_train*vecs2_train, axis = 1)
 	test_features = np.sum(vecs1_test*vecs2_test, axis = 1)
 
-	return np.expand_dims(train_features,1), train_labels,np.expand_dims(test_features,1), test_labels
+	return np.expand_dims(train_features,1), train_labels, np.expand_dims(test_features,1), test_labels
 
 def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test, confusion_mat = False):
 	train_features, train_labels,test_features, test_labels = get_batch_features(train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test)
@@ -120,5 +130,5 @@ def generate_fake_data(data_path):
 	np.savetxt(os.path.join(data_path, "embeddings"), embeddings)
 
 if __name__ == "__main__":
-	generate_fake_data(data_path)
+	# generate_fake_data(data_path)
 	train_and_test(data_path)

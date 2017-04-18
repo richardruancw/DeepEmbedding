@@ -22,6 +22,7 @@ def constructNet(filename, sep, weighted = True):
 		
 		if f.readline() == "":
 			break
+	print G.getNodes()
 	return G, weightMap
 
 def generateNeg(G,negLinks,seen, numNeg, numPos):
@@ -66,8 +67,8 @@ def writeTrainTestFile(k, posRemovable, posNonRemovable, negLinks):
 
 	for i in xrange(k):
 		random.shuffle(posRemovable)
-		train = open("train"+str(i), "w")
-		test = open("test"+str(i), "w")
+		train = open("../train"+str(i), "w")
+		test = open("../test"+str(i), "w")
 
 		node2vec = open("node2vec"+str(i),"w")
 		
