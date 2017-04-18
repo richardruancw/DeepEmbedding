@@ -5,8 +5,8 @@
 #include <algorithm>
 
 
-void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
- int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& ShrinkFactor,
+void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, int& Option,
+ int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, double& ShrinkFactor,
  bool& Verbose, double& ParamP, double& ParamQ, bool& Directed, bool& Weighted) {
   Env = TEnv(argc, argv, TNotify::StdNotify);
   Env.PrepArgs(TStr::Fmt("\nAn algorithmic framework for representational learning on graphs."));
@@ -14,6 +14,8 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
    "Input graph path");
   OutFile = Env.GetIfArgPrefixStr("-o:", "emb/karate.emb",
    "Output graph path");
+  Option = Env.GetIfArgPrefixInt("-option:", 1,
+   "Algorithm option. 1: sampledn2v, 2: recover edges, any other number: origin node2vec");
   Dimensions = Env.GetIfArgPrefixInt("-d:", 128,
    "Number of dimensions. Default is 128");
   WalkLen = Env.GetIfArgPrefixInt("-l:", 80,
@@ -22,7 +24,7 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile,
    "Number of walks per source. Default is 10");
   WinSize = Env.GetIfArgPrefixInt("-k:", 10,
    "Context size for optimization. Default is 10");
-  ShrinkFactor = Env.GetIfArgPrefixInt("-s:", 100,
+  ShrinkFactor = Env.GetIfArgPrefixFlt("-s:", 100,
    "Shrink factor of nodes number. Default is 100");
   Iter = Env.GetIfArgPrefixInt("-e:", 1,
    "Number of epochs in SGD. Default is 1");

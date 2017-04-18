@@ -111,6 +111,7 @@ namespace JumpWord2Vec {
       WordCntAll++;
 
       int64 Word = WalkV[WordI];
+      // skip fake word
       if (Word == NewFakeWord) {continue;}
 
       for (int i = 0; i < Dimensions; i++) {
@@ -124,6 +125,8 @@ namespace JumpWord2Vec {
         if (CurrWordI < 0){ continue; }
         if (CurrWordI >= WalkV.Len()){ continue; }
         int64 CurrWord = WalkV[CurrWordI];
+        // Skip fake word
+        if (CurrWord == NewFakeWord) {continue;}
         for (int i = 0; i < Dimensions; i++) { Neu1eV[i] = 0; }
         //negative sampling
         for (int j = 0; j < NegSamN+1; j++) {
