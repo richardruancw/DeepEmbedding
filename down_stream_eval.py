@@ -89,10 +89,10 @@ def get_batch_features(train_x, train_y, test_x, test_y, embedding_map, batch_in
 	vecs2_test = np.array(vecs2_test)
 	test_labels = np.array(test_labels)
 	
-	train_features = np.sum(vecs1_train*vecs2_train, axis = 1)
-	test_features = np.sum(vecs1_test*vecs2_test, axis = 1)
+	train_features = vecs1_train*vecs2_train
+	test_features = vecs1_test*vecs2_test
 
-	return np.expand_dims(train_features,1), train_labels, np.expand_dims(test_features,1), test_labels
+	return train_features, train_labels, test_features, test_labels
 
 def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test, confusion_mat = False):
 	train_features, train_labels,test_features, test_labels = get_batch_features(train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test)
