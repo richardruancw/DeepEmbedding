@@ -22,7 +22,7 @@ void TestLINEARINTERPOLATION() {
 }
 
 void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, int& TotalRound,
-	double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose){
+	double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, int& WinSize, bool& Verbose){
 
 	int64 Settled;
 	int64 Unsettled;
@@ -57,9 +57,15 @@ void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFlt
 				TIntV WalkV;
 	      		SimulateWalk(InNet, Ids[j], WalkLen, Rnd, WalkV);
 	      		for(int k = 0; k < WalkV.Len(); k++){
-	      			if(EmbeddingsHVForAll.IsKey(WalkV[k])){ // If the visited node is settled
-      					Srcs(Ids[j]) = AddVectors(Srcs(Ids[j]), EmbeddingsHVForAll(WalkV[k]));
-      					Count(Ids[j]) += 1;
+	      			if(Srcs.IsKey(WalkV[k])){ // If this center node is not settled
+	      				int start = (k - WinSize) > 0 ? (k - WinSize) : 0;
+	      				int end = (k + WinSize) < WalkV.Len() - 1 ? (k + WinSize) : WalkV.Len() - 1;
+	      				for(int p = start; p <= end; p++){
+	      					if(EmbeddingsHVForAll.IsKey(WalkV[p])){ // If this visited node is settled
+	      						Srcs(WalkV[k]) = AddVectors(Srcs(WalkV[k]), EmbeddingsHVForAll(WalkV[p]));
+	      						Count(WalkV[k]) += 1;
+	      					}
+	      				}
 	      			}// Else do nothing
 	      		}
 			}

@@ -19,7 +19,7 @@ Parameters:
 InFile - Input graph path
 OutFile - Output graph path
 Option - 
-        Algorithm option. 1: sampledn2v, 2: recover edges, any other number: origin node2vec.
+        Algorithm option. 1: recover edges, 2: sampledn2v, any other number: origin node2vec.
 Dimensions - Number of dimensions. Default is 128.
 WalkLen - Length of walk per source. Default is 80
 NumWalks - Number of walks per source. Default is 10

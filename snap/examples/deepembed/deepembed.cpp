@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
 
   if (Option == 1) {
-      printf("\n Start running direct sampling version !!\n");
+      printf("\n Start running recover edges version !!\n");
       // Prepare the graph for random walk
       PreprocessTransitionProbs(InNet, ParamP, ParamQ, Verbose);
       THashSet<TInt> RepresentativeNodes;
@@ -44,10 +44,10 @@ int main(int argc, char* argv[]) {
       TIntFltVH EmbeddingsHVForAll = TIntFltVH(EmbeddingsHVForSample);
       int TotalRound = 5;
       LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, TotalRound,
-      ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+      ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, WinSize, Verbose);
       WriteOutput(OutFile, EmbeddingsHVForAll);
     } else if(Option == 2) {
-      printf("\n Start running recover edges version !!\n");
+      printf("\n Start running direct sampling version !!\n");
       // Prepare the graph for random walk
       PreprocessTransitionProbs(InNet, ParamP, ParamQ, Verbose);
       THashSet<TInt> RepresentativeNodes;
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
       TIntFltVH EmbeddingsHVForAll = TIntFltVH(EmbeddingsHVForSample);
       int TotalRound = 5;
       LinearInterpolation(InNet, EmbeddingsHVForSample, EmbeddingsHVForAll, TotalRound,
-      ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, Verbose);
+      ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, WinSize, Verbose);
       WriteOutput(OutFile, EmbeddingsHVForAll);
     } else {
       printf("\n Start running original node2vec !!\n");
