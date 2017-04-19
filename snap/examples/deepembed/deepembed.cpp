@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
 
   if (Option == 1) {
-      printf("\n Start running direct sampling version !!\n");
+      printf("\n Start running recover edges version !!\n");
       // Prepare the graph for random walk
       PreprocessTransitionProbs(InNet, ParamP, ParamQ, Verbose);
       THashSet<TInt> RepresentativeNodes;
@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
       ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, WinSize, Verbose);
       WriteOutput(OutFile, EmbeddingsHVForAll);
     } else if(Option == 2) {
-      printf("\n Start running recover edges version !!\n");
+      printf("\n Start running direct sampling version !!\n");
       // Prepare the graph for random walk
       PreprocessTransitionProbs(InNet, ParamP, ParamQ, Verbose);
       THashSet<TInt> RepresentativeNodes;
