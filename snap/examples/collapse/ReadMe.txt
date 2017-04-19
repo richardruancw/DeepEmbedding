@@ -1,5 +1,5 @@
 ========================================================================
-    TestGraph: simple application 
+    Collapse: simple application 
 ========================================================================
 
 The application demonstrates some of the basic functionality of the
@@ -12,7 +12,4 @@ and makefiles are provided. For makefiles, compile the code with
 "make all".
 
 /////////////////////////////////////////////////////////////////////////////
-Parameters:
-
-/////////////////////////////////////////////////////////////////////////////
-Usage:
+Usage: Give a bipartite graph and specify which side to keep.
