@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
   std::vector<std::vector<int> > C2N;
   THash<TInt, TInt> N2C;
 
-  GetRowCommunities(InNet, C2N, N2C, UpdateRateThreshold, NumCommunities);
+  GetRawCommunities(InNet, C2N, N2C, UpdateRateThreshold, NumCommunities);
 
 
   InNet.Clr();
