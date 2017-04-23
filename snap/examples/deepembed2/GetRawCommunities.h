@@ -1,11 +1,17 @@
 #ifndef GETRAWCOMMYNITIES_H
 #define GETRAWCOMMYNITIES_H
 
-ComparePair(const std::pair<int, int>& p1, const std::pair<int, int>& p2);
+#include <iostream>
+#include <utility>
+#include <queue>
+#include <vector>
+#include <algorithm>
 
-void GetSortedDegreePairs(PWNet InNet, std::vector<std::pair<int, int> >& AllDegreePairs);
+bool ComparePair(const std::pair<int, int>& p1, const std::pair<int, int>& p2);
 
-int GrowCommunityByBFS(PWNet InNet, std::vector<std::vector<int> >& C2N, 
+void GetSortedDegreePairs(PUNGraph InNet, std::vector<std::pair<int, int> >& AllDegreePairs);
+
+int GrowCommunityByBFS(PUNGraph InNet, std::vector<std::vector<int> >& C2N, 
 	THash<TInt, TInt>& N2C, TIntV& Merged, int StartNId, 
 	int CommunityID, double UpdateRateThreshold, int CommunitySize);
 

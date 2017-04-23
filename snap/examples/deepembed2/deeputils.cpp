@@ -26,8 +26,6 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& Graph
    "Number of walks per source. Default is 10");
   WinSize = Env.GetIfArgPrefixInt("-k:", 10,
    "Context size for optimization. Default is 10");
-  NumCommunities = Env.GetIfArgPrefixInt("-nc:", 10000,
-   "Number of small communities. Default is 10000");
   ShrinkFactor = Env.GetIfArgPrefixFlt("-s:", 100,
    "Shrink factor of nodes number. Default is 100");
   Iter = Env.GetIfArgPrefixInt("-e:", 1,
@@ -36,7 +34,10 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& Graph
    "Return hyperparameter. Default is 1");
   ParamQ = Env.GetIfArgPrefixFlt("-q:", 1,
    "Inout hyperparameter. Default is 1");
-  UpdateRateThreshold = Env.GetIfArgPrefixFlt("-s:", 0.3,
+
+  NumCommunities = Env.GetIfArgPrefixInt("-nc:", 10000,
+   "Number of small communities. Default is 10000");
+  UpdateRateThreshold = Env.GetIfArgPrefixFlt("-ut:", 0.3,
    "Update rate threshold when grow raw communities. Default is 0.3");
 
   Verbose = Env.IsArgStr("-v", "Verbose output.");

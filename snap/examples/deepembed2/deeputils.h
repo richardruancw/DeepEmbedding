@@ -8,6 +8,7 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& Graph
  int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, double& ShrinkFactor,
  bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted);
 
+
 /* Read the graph from edgelist file
  * @pre InNet = InNet.clear()
  *
