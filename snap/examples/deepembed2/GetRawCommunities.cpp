@@ -4,9 +4,13 @@
 #include <iostream>
 #include <utility>
 #include <queue>
+<<<<<<< Updated upstream
 #include <vector>
 #include <algorithm>
 
+=======
+/*
+>>>>>>> Stashed changes
 bool ComparePair(const std::pair<int, int>& p1, const std::pair<int, int>& p2){
 	return p1.second < p2.second;
 }
@@ -100,3 +104,5 @@ void GetRawCommunities(PWNet InNet, std::vector<std::vector<int> >& C2N,
 		// printf("Finish Deleting Settled Nodes\n");
 	}
 }
+
+*/
