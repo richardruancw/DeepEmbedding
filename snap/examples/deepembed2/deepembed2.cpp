@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
   printf("Begin finding raw communities using BFS\n");
   std::vector<std::vector<int> > C2N;
   THash<TInt, TInt> N2C;
-<<<<<<< Updated upstream
+
   GetRawCommunities(InNet, C2N, N2C, UpdateRateThreshold, NumCommunities);
   printf("Get %d raw communities.\n", C2N.size());
   std::vector<int> s;
@@ -61,22 +61,6 @@ int main(int argc, char* argv[]) {
   printf("\n");
 
 
-  // InNet.Clr();
-  // ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
-
-  // // Update C2N and N2C, such that number of communities == NumCommunities.
-  // GetCommunitiesByMerge(InNet, C2N, N2C)
-
-
-  // PWNet SuperNet = PWNet::New();
-  // TVec<PWNet> NetVector;
-  // BuildSmallAndBigGraphToMemory(InNet, C2N, N2C, NetVector, SuperNet);
-  // // Or
-  // BuildSmallAndBigGraphToDisk(InNet, C2N, N2C, GraphFolder);
-=======
-
-  //GetRawCommunities(InNet, C2N, N2C, UpdateRateThreshold, NumCommunities);
-
   InNet.Clr();
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
   std::vector<std::vector<int> > NewC2N;
@@ -90,7 +74,6 @@ int main(int argc, char* argv[]) {
   // Or
   BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, GraphFolder);
   */
->>>>>>> Stashed changes
 
   return 0;
 }
