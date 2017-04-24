@@ -204,6 +204,7 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 	while (NumSettledNodes < InNet->GetNodes() && LastSettleNodes!= NumSettledNodes) {
 		printf("Before the %d round of merging, we have %d nodes, target is %d\n", ++Round, NumSettledNodes, InNet->GetNodes());
 		LastSettleNodes = NumSettledNodes;
+		#pragma omp parallel for schedule(dynamic)
 		for (int i = 0; i < NewC2N.size(); i++) {
 			TempActiveBoundary.push_back(std::vector<int> ());
 			GetNewActiveBoundaryForOneGroup(Round, InNet, i, ActiveBoundary, TempActiveBoundary, N2C, OldC2NewC);
@@ -248,10 +249,8 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 
 	// Update C2N
 	for (THash<TInt, TInt>::TIter ThashIter = N2C.BegI(); ThashIter < N2C.EndI(); ThashIter++) {
-		if (OldC2NewC.IsKey((*ThashIter).Dat)) {
-			(*ThashIter).Dat = OldC2NewC.GetDat((*ThashIter).Dat);
-		} else {
-			printf("Some nodes has note been merged");
-		}
+		IAssert(OldC2NewC.IsKey((*ThashIter).Dat));
+		(*ThashIter).Dat = OldC2NewC.GetDat((*ThashIter).Dat);
 	}
+	IAssert(InputIsValid(NewC2N, N2C));
 }
