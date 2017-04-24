@@ -8,6 +8,7 @@
 #include <queue>
 #include <vector>
 #include <algorithm>
+#include <string>
 
 #include "deeputils.h"
 #include "GetRawCommunities.h"
@@ -32,6 +33,9 @@ int main(int argc, char* argv[]) {
 
   ParseArgs(argc, argv, InFile, OutFile, GraphFolder, Dimensions, WalkLen, NumWalks, WinSize,
    Iter, NumCommunities, ShrinkFactor, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted);
+
+  //need a std::string as function for write to disk
+  std::string NewGraphFolder = GraphFolder.GetCStr();
 
   PWNet InNet = PWNet::New();
   printf("Begin loading\n");
@@ -67,13 +71,13 @@ int main(int argc, char* argv[]) {
   // Update C2N and N2C, such that number of communities == NumCommunities.
   GetCommunitiesByMerge(InNet, C2N, NewC2N, N2C, NumCommunities);
 
-  /*
+  
   PWNet SuperNet = PWNet::New();
   TVec<PWNet> NetVector;
   BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet);
   // Or
-  BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, GraphFolder);
-  */
+  //BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
+  
 
   return 0;
 }

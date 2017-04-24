@@ -61,6 +61,7 @@ void BuildSmallAndBigGraphToMemory(PWNet & InNet, std::vector< std::vector<int> 
 	std::vector<int> conductances;
 	std::cout<<"start building small graphs"<<std::endl;
 	//for each commuinity
+	#pragma omp parallel for schedule(dynamic)
 	for(int i = 0; i < C2N.size(); i++){
 /*create a new hashtable, then weightVec[i] is a hashtable mapping the other community
 to the weight between them and community i*/
