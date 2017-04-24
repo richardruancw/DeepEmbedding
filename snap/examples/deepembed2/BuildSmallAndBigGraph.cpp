@@ -15,7 +15,6 @@ void computeWeight(PUNGraph & InNet, int & nodeId, THash<TInt, TInt> & N2C,
 	bool res = false;
 	//get current node
 	TUNGraph::TNodeI currentNode = InNet->GetNI(nodeId);
-
 	//for all the neighbors of the node
 	for(int m = 0; m < currentNode.GetDeg(); m++){
 		//get the neighbor
@@ -24,13 +23,15 @@ void computeWeight(PUNGraph & InNet, int & nodeId, THash<TInt, TInt> & N2C,
 		//if the neighbor also in current cluster, increment in-cluster-edge count
 		if(targetClusterId == clusterId){
 			inEdgeCount++;
-			
-			if(! smallNet->IsNode(targetId))
-				smallNet->AddNode(targetId);
-			if(! smallNet->IsNode(nodeId))
+			if(! smallNet->IsNode(nodeId)){
 				smallNet->AddNode(nodeId);
-			if(! smallNet->IsEdge(nodeId, targetId))
+			}	
+			if(! smallNet->IsNode(targetId)){
+				smallNet->AddNode(targetId);
+			}
+			if(! smallNet->IsEdge(nodeId, targetId)){
 				smallNet->AddEdge(nodeId, targetId);
+			}	
 
 		}else{
 /* else the neighbor belongs to other cluster, increment out-cluster-edge count, 
@@ -83,7 +84,14 @@ to the weight between them and community i*/
 		NetVector.Add(smallNet);
 
 		if(!TSnap::IsWeaklyConn<PUNGraph>(smallNet)){
-			printf("not connected ! %d \n", i);
+			printf("not connected ! %d size %d \n", i, smallNet->GetNodes());
+			printf("cluster size should be %d \n", C2N[i].size());
+
+			for(int kk = 0; kk < C2N[i].size(); kk++){
+				if(! smallNet->IsNode(C2N[i][kk])){
+					printf("%d, haha, %d, haha, %d \n",C2N[i][kk], i, (int)N2C(C2N[i][kk]));
+				}
+			}
 		}
 		printf("\rBuilding small graph process: %2lf%%",100*(double)(i+1)/(double)C2N.size());
     	fflush(stdout);
