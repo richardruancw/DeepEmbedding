@@ -55,18 +55,20 @@ int main(int argc, char* argv[]) {
   printf("Total covered Nodes: %d\n", ss);
   printf("The sizes of every communities: \n");
   std::sort(s.begin(), s.end());
-  for(int i = s.size(); i >= 0; i--){
+  for(int i = s.size() - 1; i >= 0; i--){
     printf("%d ", s[i]);
   }
   printf("\n");
 
 
   InNet.Clr();
+  InNet = PWNet::New();
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
   std::vector<std::vector<int> > NewC2N;
   // Update C2N and N2C, such that number of communities == NumCommunities.
   GetCommunitiesByMerge(InNet, C2N, NewC2N, N2C, NumCommunities);
-
+  printf("Number of communities in Original %d\n", C2N.size());
+  printf("Number of communities in New %d\n", NewC2N.size());
   /*
   PWNet SuperNet = PWNet::New();
   TVec<PWNet> NetVector;
