@@ -70,14 +70,15 @@ int main(int argc, char* argv[]) {
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
   std::vector<std::vector<int> > NewC2N;
   // Update C2N and N2C, such that number of communities == NumCommunities.
-  GetCommunitiesByMerge(InNet, C2N, NewC2N, N2C, NumCommunities);
+  int testNum = 5;
+  GetCommunitiesByMerge(InNet, C2N, NewC2N, N2C, testNum);
 
   printf("Number of communities in Original %d\n", C2N.size());
   printf("Number of communities in New %d\n", NewC2N.size());
 
 
   PWNet SuperNet = PWNet::New();
-  TVec<PWNet> NetVector;
+  TVec<PUNGraph> NetVector;
   BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet);
   // Or
   //BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);

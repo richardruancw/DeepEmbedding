@@ -10,7 +10,7 @@
 void computeWeight(PUNGraph & InNet, int & nodeId, THash<TInt, TInt> & N2C, 
 	int & outEdgeCount, int & inEdgeCount, 
 	int & clusterId,std::vector<THash<TInt, TInt> > & weightVec,
-	PWNet & smallNet){
+	PUNGraph & smallNet){
 	
 	bool res = false;
 	//get current node
@@ -42,9 +42,9 @@ this is a bdy node*/
 			if(targetClusterId > clusterId){
 				// if in hashtable, increment weight, else set weight to be 1 
 				if(weightVec[clusterId].IsKey(targetClusterId)){
-					weightVec[clusterId][targetClusterId]++;
+					weightVec[clusterId](targetClusterId)++;
 				}else{
-					weightVec[clusterId][targetClusterId] = 1;
+					weightVec[clusterId](targetClusterId) = 1;
 				}
 			}else{
 //if clusterId > targetClusterId, this edge should be handled before we come to this step
@@ -55,7 +55,7 @@ this is a bdy node*/
 }
 
 void BuildSmallAndBigGraphToMemory(PWNet & InNet, std::vector< std::vector<int> > & C2N, 
-	THash<TInt, TInt> & N2C, TVec<PWNet> & NetVector, PWNet & SuperNet){
+	THash<TInt, TInt> & N2C, TVec<PUNGraph> & NetVector, PWNet & SuperNet){
 	
 	PUNGraph OriginNet = PUNGraph::New();
 	OriginNet = TSnap::ConvertGraph<PUNGraph, PWNet> (InNet);
@@ -71,7 +71,7 @@ to the weight between them and community i*/
 		THash<TInt, TInt>  OtherCluster2Weight;
 		weightVec.push_back(OtherCluster2Weight);
 		
-		PWNet smallNet = PWNet::New();
+		PUNGraph smallNet = PUNGraph::New();
 
 		int outEdgeCount = 0;
 		int inEdgeCount = 0;
@@ -82,9 +82,14 @@ to the weight between them and community i*/
 		conductances.push_back((double)outEdgeCount/(double)inEdgeCount);
 		NetVector.Add(smallNet);
 
-		printf("\rBuilding process: %2lf%%",100*(double)i/(double)C2N.size());
+		if(!TSnap::IsWeaklyConn<PUNGraph>(smallNet)){
+			printf("not connected ! %d \n", i);
+		}
+		printf("\rBuilding small graph process: %2lf%%",100*(double)(i+1)/(double)C2N.size());
     	fflush(stdout);
+    	
 	}
+	printf("\n");
 	std::cout<<"finish building small graphs, there are "<<NetVector.Len()<<"in total"<<std::endl;
 	std::cout<<"start building super graph!"<<std::endl;
 	//super graph construction
@@ -103,26 +108,40 @@ to the weight between them and community i*/
 				SuperNet->SetEDat(i, neighbor, weight);
 			}
 		}
-		if(i % 100 == 0){
-			printf("\rBuilding process: %2lf%%",100*(double)i/(double)weightVec.size());
+		if(i % 1 == 0){
+			printf("\rBuilding super graph process: %2lf%%",100*(double)(i+1)/(double)weightVec.size());
     		fflush(stdout);
 		}
 	}
+	printf("\n");
 }
 
-void writeOutGraph(std::string & GraphFolder, std::string & name, bool weighted, PWNet & Net){
+void writeOutGraph1(std::string & GraphFolder, std::string & name,PUNGraph & Net){
+	std::string filePath = GraphFolder+"/"+name;
+	TStr NewStr(filePath.c_str());
+	// TFOut FOut(NewStr);
+
+	TSnap::SaveEdgeList(Net, NewStr);
+	// for(PUNGraph::TEdgeI EI = Net->BegEI(); EI < Net -> EndEI(); EI++){
+	// 	FOut.PutInt(EI.GetSrcNId());
+	// 	FOut.PutCh(' ');
+	// 	FOut.PutInt(EI.GetDstNId());
+	// 	FOut.PutCh(' ');
+	// }
+}
+
+void writeOutGraph2(std::string & GraphFolder, std::string & name,PWNet & Net){
 	std::string filePath = GraphFolder+"/"+name;
 	TStr NewStr(filePath.c_str());
 	TFOut FOut(NewStr);
+
 	for(TWNet::TEdgeI EI = Net->BegEI(); EI < Net -> EndEI(); EI++){
 		FOut.PutInt(EI.GetSrcNId());
 		FOut.PutCh(' ');
 		FOut.PutInt(EI.GetDstNId());
 		FOut.PutCh(' ');
-		if(weighted){
-			FOut.PutInt(EI.GetDat());
-			FOut.PutLn();
-		}
+		FOut.PutInt(EI.GetDat());
+		FOut.PutLn();
 	}
 }
 
@@ -143,7 +162,7 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 		THash<TInt, TInt>  OtherCluster2Weight;
 		weightVec.push_back(OtherCluster2Weight);
 		
-		PWNet smallNet = PWNet::New();
+		PUNGraph smallNet = PUNGraph::New();
 
 		int outEdgeCount = 0;
 		int inEdgeCount = 0;
@@ -157,7 +176,7 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 		std::ostringstream convert;
 		convert << i;
 		name = convert.str();
-		writeOutGraph(GraphFolder, name, false, smallNet);
+		writeOutGraph1(GraphFolder, name, smallNet);
 
 		printf("\rBuilding process: %2lf%%",100*(double)i/(double)C2N.size());
     	fflush(stdout);
@@ -185,6 +204,6 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
     		fflush(stdout);
 		}
 		std::string name = "super_graph";
-		writeOutGraph(GraphFolder,name , true, SuperNet);
+		writeOutGraph2(GraphFolder,name , SuperNet);
 	}
 }
