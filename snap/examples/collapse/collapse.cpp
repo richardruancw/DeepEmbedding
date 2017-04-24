@@ -6,7 +6,7 @@
 int main(int argc, char* argv[]) {
   //// what type of graph do you want to use?
   // typedef PUNGraph PGraph; // undirected graph
-  typedef PNGraph PGraph;  //   directed graph
+  typedef PNGraph PGraph;  // I  directed graph
   
   typedef TNodeEDatNet<TInt, TFlt> TWNet;
   typedef TPt<TWNet> PWNet;

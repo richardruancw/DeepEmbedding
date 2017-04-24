@@ -7,20 +7,20 @@
 #include "biasedrandomwalk.h"
 #include "BuildSmallAndBigGraph.h"
 
-void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C, 
+void computeWeight(PUNGraph & InNet, int & nodeId, THash<TInt, TInt> & N2C, 
 	int & outEdgeCount, int & inEdgeCount, 
 	int & clusterId,std::vector<THash<TInt, TInt> > & weightVec,
 	PWNet & smallNet){
 	
 	bool res = false;
 	//get current node
-	TWNet::TNodeI currentNode = InNet->GetNI(nodeId);
+	TUNGraph::TNodeI currentNode = InNet->GetNI(nodeId);
 
 	//for all the neighbors of the node
 	for(int m = 0; m < currentNode.GetDeg(); m++){
 		//get the neighbor
 		int targetId = currentNode.GetNbrNId(m);
-		int targetClusterId = N2C[targetId];
+		int targetClusterId = N2C(targetId);
 		//if the neighbor also in current cluster, increment in-cluster-edge count
 		if(targetClusterId == clusterId){
 			inEdgeCount++;
@@ -57,6 +57,9 @@ this is a bdy node*/
 void BuildSmallAndBigGraphToMemory(PWNet & InNet, std::vector< std::vector<int> > & C2N, 
 	THash<TInt, TInt> & N2C, TVec<PWNet> & NetVector, PWNet & SuperNet){
 	
+	PUNGraph OriginNet = PUNGraph::New();
+	OriginNet = TSnap::ConvertGraph<PUNGraph, PWNet> (InNet);
+	
 	std::vector<THash<TInt, TInt> > weightVec;
 	std::vector<int> conductances;
 	std::cout<<"start building small graphs"<<std::endl;
@@ -74,7 +77,7 @@ to the weight between them and community i*/
 		int inEdgeCount = 0;
 		//for each node in current comminity
 		for(int j = 0; j < C2N[i].size(); j++){
-			computeWeight(InNet, j, N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
+			computeWeight(OriginNet, j, N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
 		}
 		conductances.push_back((double)outEdgeCount/(double)inEdgeCount);
 		NetVector.Add(smallNet);
@@ -126,6 +129,9 @@ void writeOutGraph(std::string & GraphFolder, std::string & name, bool weighted,
 void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > & C2N, 
 	THash<TInt, TInt> & N2C, std::string & GraphFolder){
 
+	PUNGraph OriginNet = PUNGraph::New();
+	OriginNet = TSnap::ConvertGraph<PUNGraph, PWNet> (InNet);
+
 	std::vector<THash<TInt, TInt> > weightVec;
 	std::vector<int> conductances;
 	std::cout<<"start building small graphs"<<std::endl;
@@ -143,7 +149,7 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 		int inEdgeCount = 0;
 		//for each node in current comminity
 		for(int j = 0; j < C2N[i].size(); j++){
-			computeWeight(InNet, j, N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
+			computeWeight(OriginNet, j, N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
 		}
 		conductances.push_back((double)outEdgeCount/(double)inEdgeCount);
 

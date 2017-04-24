@@ -1,7 +1,7 @@
 #ifndef BUILDSMALLANDBIGGRAPH_H
 #define BUILDSMALLANDBIGGRAPH_H
 
-void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C, 
+void computeWeight(PUNGraph & InNet, int & nodeId, THash<TInt, TInt> & N2C, 
 	int & outEdgeCount, int & inEdgeCount, int & clusterId);
 
 void BuildSmallAndBigGraphToMemory(PWNet & InNet, std::vector< std::vector<int> > & C2N, 
