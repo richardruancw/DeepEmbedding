@@ -173,11 +173,11 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 		printf("This graph is weakly connnected\n");
 	}
 
+
 	if (NumCommunities >= C2N.size()) {
 		NewC2N = C2N;
 		return;
 	}
-
 	int NumSettledNodes = 0;
 	// Get top NumCommunities
 	std::vector<int> TopGroup;
@@ -260,12 +260,10 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 	int TotalNodes = 0;
 	for (int i = 0; i < NewC2N.size(); i++) {
 		PWNet smallNet = PWNet::New();
-		THashSet<TInt> Record;
+		THashSet<TInt> Duplicated;
 		for (int j = 0; j < NewC2N[i].size(); j++) {
-			if (Record.IsKey(NewC2N[i][j])) {
-				printf("There are duplicated nodes!!!!\n");
-			}
-			Record.AddKey(NewC2N[i][j]);
+			IAssert(!Duplicated.IsKey(NewC2N[i][j]));
+			Duplicated.AddKey(NewC2N[i][j]);
 			int NodeOne = NewC2N[i][j];
 			for (int k = j+1; k < NewC2N[i].size(); k++) {
 				int NodeTwo = NewC2N[i][k];
@@ -280,10 +278,10 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 				}
 			}
 		}
-		int L = Record.Len();
-		TotalNodes += Record.Len();
+		int L = Duplicated.Len();
+		TotalNodes += Duplicated.Len();
 
-		IAssert(Record.Len() == NewC2N[i].size());
+		IAssert(Duplicated.Len() == NewC2N[i].size());
 		printf("%d , %d\n", smallNet->GetNodes(), NewC2N[i].size());
 		IAssert(smallNet->GetNodes() == NewC2N[i].size());
 		IAssert(TSnap::IsWeaklyConn<PWNet>(smallNet));
