@@ -254,6 +254,8 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 
 
 
+
+    // Following are debug code for following tasks.
 	IAssert(InputIsValid(NewC2N, N2C));
 	int TotalNodes = 0;
 	for (int i = 0; i < NewC2N.size(); i++) {
@@ -267,7 +269,7 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 			int NodeOne = NewC2N[i][j];
 			for (int k = j+1; k < NewC2N[i].size(); k++) {
 				int NodeTwo = NewC2N[i][k];
-				if (!InNet->IsNode(NodeOne) || !InNet->IsNode(NodeTwo)){continue;}
+				IAssert(InNet->IsNode(NodeOne) && InNet->IsNode(NodeTwo));
 				if (InNet->IsEdge(NodeOne, NodeTwo) && InNet->IsEdge(NodeTwo, NodeOne)) {
 					if (!smallNet->IsNode(NodeOne)) {smallNet->AddNode(NodeOne);}
 					if (!smallNet->IsNode(NodeTwo)) {smallNet->AddNode(NodeTwo);}
@@ -287,6 +289,5 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 		IAssert(TSnap::IsWeaklyConn<PWNet>(smallNet));
 	}
 	IAssert(TotalNodes == NumSettledNodes);
-
 
 }
