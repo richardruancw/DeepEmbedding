@@ -5,7 +5,6 @@
 #include <algorithm>
 
 
-
 bool SizeCompare(const std::pair<int, int>& Left, const std::pair<int, int>& Right) {
 		return Left.second < Right.second;
 	}
@@ -32,7 +31,7 @@ bool InputIsValid(std::vector<std::vector<int> >& C2N, THash<TInt, TInt>& N2C) {
 		for (int j = 0; j < C2N[i].size(); j++) {
 			if (N2C(C2N[i][j]) != i) {
 				printf("The input N2C and C2N is not consistent !\n");
-				//return false;
+				return false;
 			}
 		}
 	}
@@ -252,5 +251,23 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 		IAssert(OldC2NewC.IsKey((*ThashIter).Dat));
 		(*ThashIter).Dat = OldC2NewC.GetDat((*ThashIter).Dat);
 	}
+
+
 	IAssert(InputIsValid(NewC2N, N2C));
+	for (int i = 0; i < NewC2N.size(); i++) {
+		PUNGraph smallNet = PUNGraph::New();
+		for (int j = 0; j < NewC2N[i].size(); j++) {
+			for (int k = k+1; k < NewC2N[i].size(); k++) {
+				if (InNet->IsEdge(NewC2N[i][j], NewC2N[i][k])) {
+					smallNet->AddEdge(NewC2N[i][j], NewC2N[i][k]);
+				} 
+			}
+		}
+		if(!smallNet->GetNodes() == NewC2N[i].size()) {
+			printf("The %d group is not consistent \n", i);
+		}
+		IAssert(TSnap::IsWeaklyConn<PUNGraph>(smallNet));
+	}
+
+
 }
