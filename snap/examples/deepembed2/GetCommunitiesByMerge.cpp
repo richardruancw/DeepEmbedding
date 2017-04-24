@@ -5,7 +5,6 @@
 #include <algorithm>
 
 
-
 bool SizeCompare(const std::pair<int, int>& Left, const std::pair<int, int>& Right) {
 		return Left.second < Right.second;
 	}
@@ -32,7 +31,7 @@ bool InputIsValid(std::vector<std::vector<int> >& C2N, THash<TInt, TInt>& N2C) {
 		for (int j = 0; j < C2N[i].size(); j++) {
 			if (N2C(C2N[i][j]) != i) {
 				printf("The input N2C and C2N is not consistent !\n");
-				//return false;
+				return false;
 			}
 		}
 	}
@@ -174,11 +173,11 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 		printf("This graph is weakly connnected\n");
 	}
 
+
 	if (NumCommunities >= C2N.size()) {
 		NewC2N = C2N;
 		return;
 	}
-
 	int NumSettledNodes = 0;
 	// Get top NumCommunities
 	std::vector<int> TopGroup;
@@ -252,5 +251,41 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 		IAssert(OldC2NewC.IsKey((*ThashIter).Dat));
 		(*ThashIter).Dat = OldC2NewC.GetDat((*ThashIter).Dat);
 	}
+
+
+
+
+    // Following are debug code for following tasks.
 	IAssert(InputIsValid(NewC2N, N2C));
+	int TotalNodes = 0;
+	for (int i = 0; i < NewC2N.size(); i++) {
+		PWNet smallNet = PWNet::New();
+		THashSet<TInt> Duplicated;
+		for (int j = 0; j < NewC2N[i].size(); j++) {
+			IAssert(!Duplicated.IsKey(NewC2N[i][j]));
+			Duplicated.AddKey(NewC2N[i][j]);
+			int NodeOne = NewC2N[i][j];
+			for (int k = j+1; k < NewC2N[i].size(); k++) {
+				int NodeTwo = NewC2N[i][k];
+				IAssert(InNet->IsNode(NodeOne) && InNet->IsNode(NodeTwo));
+				if (InNet->IsEdge(NodeOne, NodeTwo) && InNet->IsEdge(NodeTwo, NodeOne)) {
+					if (!smallNet->IsNode(NodeOne)) {smallNet->AddNode(NodeOne);}
+					if (!smallNet->IsNode(NodeTwo)) {smallNet->AddNode(NodeTwo);}
+					double weight12 = InNet->GetEI(NodeOne, NodeTwo).GetDat();
+					double weight21 = InNet->GetEI(NodeTwo, NodeOne).GetDat();
+					if (!smallNet->IsEdge(NodeOne, NodeTwo)) {smallNet->AddEdge(NodeOne, NodeTwo, weight12);}	
+					if (!smallNet->IsEdge(NodeTwo, NodeOne)) {smallNet->AddEdge(NodeTwo, NodeOne, weight21);}	
+				}
+			}
+		}
+		int L = Duplicated.Len();
+		TotalNodes += Duplicated.Len();
+
+		IAssert(Duplicated.Len() == NewC2N[i].size());
+		printf("%d , %d\n", smallNet->GetNodes(), NewC2N[i].size());
+		IAssert(smallNet->GetNodes() == NewC2N[i].size());
+		IAssert(TSnap::IsWeaklyConn<PWNet>(smallNet));
+	}
+	IAssert(TotalNodes == NumSettledNodes);
+
 }
