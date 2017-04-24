@@ -253,21 +253,40 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 	}
 
 
+
 	IAssert(InputIsValid(NewC2N, N2C));
+	int TotalNodes = 0;
 	for (int i = 0; i < NewC2N.size(); i++) {
-		PUNGraph smallNet = PUNGraph::New();
+		PWNet smallNet = PWNet::New();
+		THashSet<TInt> Record;
 		for (int j = 0; j < NewC2N[i].size(); j++) {
-			for (int k = k+1; k < NewC2N[i].size(); k++) {
-				if (InNet->IsEdge(NewC2N[i][j], NewC2N[i][k])) {
-					smallNet->AddEdge(NewC2N[i][j], NewC2N[i][k]);
-				} 
+			if (Record.IsKey(NewC2N[i][j])) {
+				printf("There are duplicated nodes!!!!\n");
+			}
+			Record.AddKey(NewC2N[i][j]);
+			int NodeOne = NewC2N[i][j];
+			for (int k = j+1; k < NewC2N[i].size(); k++) {
+				int NodeTwo = NewC2N[i][k];
+				if (!InNet->IsNode(NodeOne) || !InNet->IsNode(NodeTwo)){continue;}
+				if (InNet->IsEdge(NodeOne, NodeTwo) && InNet->IsEdge(NodeTwo, NodeOne)) {
+					if (!smallNet->IsNode(NodeOne)) {smallNet->AddNode(NodeOne);}
+					if (!smallNet->IsNode(NodeTwo)) {smallNet->AddNode(NodeTwo);}
+					double weight12 = InNet->GetEI(NodeOne, NodeTwo).GetDat();
+					double weight21 = InNet->GetEI(NodeTwo, NodeOne).GetDat();
+					if (!smallNet->IsEdge(NodeOne, NodeTwo)) {smallNet->AddEdge(NodeOne, NodeTwo, weight12);}	
+					if (!smallNet->IsEdge(NodeTwo, NodeOne)) {smallNet->AddEdge(NodeTwo, NodeOne, weight21);}	
+				}
 			}
 		}
-		if(!smallNet->GetNodes() == NewC2N[i].size()) {
-			printf("The %d group is not consistent \n", i);
-		}
-		IAssert(TSnap::IsWeaklyConn<PUNGraph>(smallNet));
+		int L = Record.Len();
+		TotalNodes += Record.Len();
+
+		IAssert(Record.Len() == NewC2N[i].size());
+		printf("%d , %d\n", smallNet->GetNodes(), NewC2N[i].size());
+		IAssert(smallNet->GetNodes() == NewC2N[i].size());
+		IAssert(TSnap::IsWeaklyConn<PWNet>(smallNet));
 	}
+	IAssert(TotalNodes == NumSettledNodes);
 
 
 }
