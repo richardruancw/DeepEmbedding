@@ -4,7 +4,7 @@
 
 /* Parse the input from command line
  */
-void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& GraphFolder,
+void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& StatsFile, TStr& GraphFolder,
  int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, double& ShrinkFactor,
  bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted);
 
