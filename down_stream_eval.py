@@ -25,7 +25,7 @@ def load_train_test(data_path, our_embedding = True):
 	test = np.loadtxt(os.path.join(data_path,"test0"))
 	batch_size_test = test.shape[0]
 	if our_embedding:
-		embeddings = np.loadtxt(os.path.join(data_path,"embedding0"), skiprows = 1)
+		embeddings = np.loadtxt(os.path.join(data_path,"outemb.txt"), skiprows = 1)
 	else:
 		embeddings = np.loadtxt(os.path.join(data_path,"Origin"), skiprows = 1)
 

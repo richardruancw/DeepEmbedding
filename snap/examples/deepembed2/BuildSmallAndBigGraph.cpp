@@ -194,7 +194,7 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 			}
 		}
 		if(i % 1 == 0){
-			printf("\rBuilding process: %2lf%%",100*(double)i/(double)weightVec.size());
+			printf("\rBuilding process: %2lf%%",100*(double)(i+1)/(double)weightVec.size());
     		fflush(stdout);
 		}
 		std::string name = "super_graph";

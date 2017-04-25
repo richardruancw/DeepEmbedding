@@ -63,7 +63,7 @@ int GetBoundayCondition(int Round, const PWNet& InNet, int NodeId, const THash<T
 				NumOutSider++;
 			}
 		}
-		if (NumOutSider > Round) {break;}
+		//if (NumOutSider > Round) {break;}
 	}
 	return Condition * flag;
 }
@@ -168,6 +168,8 @@ void ResolveConflictsByRandomAssign(std::vector<std::vector<int> >& NewC2N, std:
 
 void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C2N, std::vector<std::vector<int> >& NewC2N,
 					 THash<TInt, TInt>& N2C, int& NumCommunities) {
+
+	IAssert(TSnap::IsWeaklyConn<PWNet>(InNet));
 
 	if (NumCommunities >= C2N.size()) {
 		NewC2N = C2N;

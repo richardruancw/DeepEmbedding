@@ -40,8 +40,11 @@ int main(int argc, char* argv[]) {
   PWNet InNet = PWNet::New();
   printf("Begin loading\n");
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
+
   printf("End loading\n");
 
+  printf("Num of Nodes: %d\n", InNet->GetNodes());
+  InNet = TSnap::GetMxScc(InNet);
   printf("Num of Nodes: %d\n", InNet->GetNodes());
   
   printf("Begin finding raw communities using BFS\n");
@@ -56,22 +59,30 @@ int main(int argc, char* argv[]) {
     ss += C2N[i].size();
     s.push_back(C2N[i].size());
   }
+
   printf("Total covered Nodes: %d\n", ss);
   printf("The sizes of every communities: \n");
+  /*
   std::sort(s.begin(), s.end());
   for(int i = s.size() - 1; i >= 0; i--){
     printf("%d ", s[i]);
   }
   printf("\n");
+  */
 
 
   InNet.Clr();
   InNet = PWNet::New();
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
+
+  printf("Num of Nodes: %d\n", InNet->GetNodes());
+  InNet = TSnap::GetMxScc(InNet);
+  printf("Num of Nodes: %d\n", InNet->GetNodes());
+
   std::vector<std::vector<int> > NewC2N;
   // Update C2N and N2C, such that number of communities == NumCommunities.
   int testNum = 5;
-  GetCommunitiesByMerge(InNet, C2N, NewC2N, N2C, testNum);
+  GetCommunitiesByMerge(InNet, C2N, NewC2N, N2C, NumCommunities);
 
   printf("Number of communities in Original %d\n", C2N.size());
   printf("Number of communities in New %d\n", NewC2N.size());
@@ -79,11 +90,46 @@ int main(int argc, char* argv[]) {
 
   PWNet SuperNet = PWNet::New();
   TVec<PWNet> NetVector;
-  // BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet);
+  BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet);
   // Or
 
-  std::cout<<NewGraphFolder<<std::endl;
-  BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
+  TFOut FOut(OutFile);
+  TIntFltVH EmbeddingsHVSuperNet;
+  node2vec(SuperNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
+    EmbeddingsHVSuperNet);
+
+  printf("Start learning for small net");
+  FOut.PutCh(' ');
+  FOut.PutLn();
+  for (int i = 0; i < NetVector.Len(); i++) {
+    printf("This for the %d cluster\n", i);
+    TIntFltVH EmbeddingsHVSmallNet;
+    PWNet CurrSmallNet = NetVector[i];
+    node2vec(CurrSmallNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
+    EmbeddingsHVSmallNet);
+    for (TIntFltVH::TIter iter = EmbeddingsHVSmallNet.BegI(); iter < EmbeddingsHVSmallNet.EndI(); iter++) {
+        FOut.PutInt(iter->Key);
+        FOut.PutCh(' ');
+        for (int j = 0; j < (iter->Dat).Len(); j++) {
+          FOut.PutFlt((iter->Dat)[j]);
+          FOut.PutCh(' ');
+        }
+        
+        for (int j = 0; j < EmbeddingsHVSuperNet.GetDat(i).Len(); j++) {
+          FOut.PutFlt(EmbeddingsHVSuperNet.GetDat(i)[j]);
+          FOut.PutCh(' ');
+        }
+        
+        FOut.PutLn();
+    }
+  }
+  
+
+
+
+
+  // std::cout<<NewGraphFolder<<std::endl;
+  // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
   
   return 0;
 }
