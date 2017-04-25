@@ -124,10 +124,6 @@ int main(int argc, char* argv[]) {
     }
   }
   
-
-
-
-
   // std::cout<<NewGraphFolder<<std::endl;
   // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
   
