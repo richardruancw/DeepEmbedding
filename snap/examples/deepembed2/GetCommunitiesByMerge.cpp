@@ -29,7 +29,7 @@ void GetTopGroup(std::vector<int>& TopGroup, const std::vector<std::vector<int> 
 bool InputIsValid(std::vector<std::vector<int> >& C2N, THash<TInt, TInt>& N2C) {
 	for (int i = 0; i < C2N.size(); i++) {
 		for (int j = 0; j < C2N[i].size(); j++) {
-			if (N2C(C2N[i][j]) != i) {
+			if (N2C.GetDat(C2N[i][j]) != i) {
 				printf("The input N2C and C2N is not consistent !\n");
 				return false;
 			}
@@ -225,14 +225,14 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 
 	if (NumSettledNodes < InNet->GetNodes()) {
 		for (TWNet::TEdgeI EI = InNet->BegEI(); EI < InNet->EndEI(); EI++) {
-			int sourceGroup = N2C(EI.GetSrcNId());
-			int endGroup = N2C(EI.GetDstNId());
+			int sourceGroup = N2C.GetDat(EI.GetSrcNId());
+			int endGroup = N2C.GetDat(EI.GetDstNId());
 			if (!OldC2NewC.IsKey(sourceGroup) && OldC2NewC.IsKey(endGroup)) {
-				N2C(EI.GetSrcNId()) = endGroup;
+				N2C.GetDat(EI.GetSrcNId()) = endGroup;
 				NewC2N[OldC2NewC.GetDat(endGroup)].push_back(EI.GetSrcNId());
 				NumSettledNodes++;
 			} else if (OldC2NewC.IsKey(sourceGroup) && !OldC2NewC.IsKey(endGroup)) {
-				N2C(EI.GetDstNId()) = sourceGroup;
+				N2C.GetDat(EI.GetDstNId()) = sourceGroup;
 				NewC2N[OldC2NewC.GetDat(sourceGroup)].push_back(EI.GetDstNId());
 				NumSettledNodes++;
 			}
@@ -253,8 +253,6 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 	}
 
 
-
-
     // Following are debug code for following tasks.
 	IAssert(InputIsValid(NewC2N, N2C));
 	int TotalNodes = 0;
@@ -269,8 +267,8 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 				int NodeTwo = NewC2N[i][k];
 				IAssert(InNet->IsNode(NodeOne) && InNet->IsNode(NodeTwo));
 				if (InNet->IsEdge(NodeOne, NodeTwo) && InNet->IsEdge(NodeTwo, NodeOne)) {
-					if (!smallNet->IsNode(NodeOne)) {smallNet->AddNode(NodeOne);}
-					if (!smallNet->IsNode(NodeTwo)) {smallNet->AddNode(NodeTwo);}
+					if (!smallNet->IsNode(NodeOne)) {smallNet->AddNode(NodeOne); TotalNodes++;}
+					if (!smallNet->IsNode(NodeTwo)) {smallNet->AddNode(NodeTwo); TotalNodes++;}
 					double weight12 = InNet->GetEI(NodeOne, NodeTwo).GetDat();
 					double weight21 = InNet->GetEI(NodeTwo, NodeOne).GetDat();
 					if (!smallNet->IsEdge(NodeOne, NodeTwo)) {smallNet->AddEdge(NodeOne, NodeTwo, weight12);}	
@@ -278,8 +276,6 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 				}
 			}
 		}
-		int L = Duplicated.Len();
-		TotalNodes += Duplicated.Len();
 
 		IAssert(Duplicated.Len() == NewC2N[i].size());
 		printf("%d , %d\n", smallNet->GetNodes(), NewC2N[i].size());
@@ -287,5 +283,17 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 		IAssert(TSnap::IsWeaklyConn<PWNet>(smallNet));
 	}
 	IAssert(TotalNodes == NumSettledNodes);
+
+    
+	for (TWNet::TNodeI iter = InNet->BegNI(); iter < InNet->EndNI(); iter++) {
+		int group = N2C.GetDat(iter.GetId());
+		int flag = 0;
+		for (int i = 0; i < NewC2N[group].size(); i++) {
+			if (NewC2N[group][i] == iter.GetId()) {
+				flag = 1;
+			}
+		}
+		IAssert(flag == 1);
+	}
 
 }
