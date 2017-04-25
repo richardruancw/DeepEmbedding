@@ -78,12 +78,13 @@ int main(int argc, char* argv[]) {
 
 
   PWNet SuperNet = PWNet::New();
-  TVec<PUNGraph> NetVector;
-  BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet);
+  TVec<PWNet> NetVector;
+  // BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet);
   // Or
-  //BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
-  
 
+  std::cout<<NewGraphFolder<<std::endl;
+  BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
+  
   return 0;
 }
 
