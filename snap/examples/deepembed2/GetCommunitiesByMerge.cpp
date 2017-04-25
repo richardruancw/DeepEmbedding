@@ -169,11 +169,6 @@ void ResolveConflictsByRandomAssign(std::vector<std::vector<int> >& NewC2N, std:
 void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C2N, std::vector<std::vector<int> >& NewC2N,
 					 THash<TInt, TInt>& N2C, int& NumCommunities) {
 
-	if (TSnap::IsWeaklyConn<PWNet>(InNet)) {
-		printf("This graph is weakly connnected\n");
-	}
-
-
 	if (NumCommunities >= C2N.size()) {
 		NewC2N = C2N;
 		return;
@@ -254,6 +249,7 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 
 
     // Following are debug code for following tasks.
+    /*
 	IAssert(InputIsValid(NewC2N, N2C));
 	int TotalNodes = 0;
 	for (int i = 0; i < NewC2N.size(); i++) {
@@ -295,5 +291,6 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 		}
 		IAssert(flag == 1);
 	}
+	*/
 
 }
