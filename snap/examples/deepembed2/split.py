@@ -1,11 +1,15 @@
 import random,sys,snap
 
-def constructNet(filename, sep, weighted = True):
+def constructNet(filename, sep, weighted = False):
 	weightMap = {}
 	f = open(filename, "r")
 	G = snap.TUndirNet.New()
-	while True:
-		info = f.readline().split(sep)
+	count = 0
+	for line in f:
+		count+=1
+		if len(line) == 0:
+			continue
+		info = line.split(sep)
 		node1 = int(info[0])
 		node2 = int(info[1])
 		if not G.IsNode(node1):
@@ -17,10 +21,11 @@ def constructNet(filename, sep, weighted = True):
 			if weighted:
 				weight = int(info[2])
 				weightMap[(node1, node2)] = weight
-		
-		if f.readline() == "":
-			break
-
+			else:
+				weightMap[(node1, node2)] = 1
+		if count%1000 == 0:
+			print count
+	print count
 	return G, weightMap
 
 def generateNeg(G,negLinks,seen, numNeg, numPos):
