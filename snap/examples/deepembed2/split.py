@@ -1,8 +1,5 @@
 import random,sys,snap
 
-k = int(sys.argv[1])
-input_graph = sys.argv[2]
-
 def constructNet(filename, sep, weighted = True):
 	weightMap = {}
 	f = open(filename, "r")
@@ -105,6 +102,8 @@ if __name__ == "__main__":
 	if len(args) != 3:
 		print "Usage: python split.py number_of_partitions input_graph"
 		sys.exit()
+	k = int(sys.argv[1])
+	input_graph = sys.argv[2]
 
 	G, weightMap = constructNet(input_graph, " ")
 	numPos = G.GetEdges()
