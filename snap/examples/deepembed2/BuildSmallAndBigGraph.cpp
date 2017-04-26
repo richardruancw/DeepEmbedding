@@ -32,11 +32,13 @@ void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C,
 				smallNet->AddNode(targetId);
 			}
 			if(! smallNet->IsEdge(nodeId, targetId)){
+
 				weight12 = InNet->GetEDat(nodeId, targetId);
-				smallNet->AddEdge(nodeId, targetId,weight12);
-				
 				weight21 = InNet->GetEDat(targetId, nodeId);
+				
+				smallNet->AddEdge(nodeId, targetId,weight12);
 				smallNet->AddEdge(targetId, nodeId, weight21);
+
 			}
 
 			assert(smallNet->IsEdge(nodeId, targetId) == true);

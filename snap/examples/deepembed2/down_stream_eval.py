@@ -16,12 +16,13 @@ def parseArgs(args):
 
 	return batch_size, d, game_round
 
-def load_train_test(eval_path, embedding_path, our_embedding = True):
+def load_train_test(eval_path, embedding_path, our_embedding = False):
 	train = np.loadtxt(os.path.join(eval_path,"train"+game_round))
 	test = np.loadtxt(os.path.join(eval_path,"test"+game_round))
 	batch_size_test = test.shape[0]
 	if our_embedding:
 		embeddings = np.loadtxt(os.path.join(embedding_path,"outemb"+game_round+".txt"), skiprows = 1)
+		 # embeddings = np.loadtxt(os.path.join(embedding_path,"outemb_lonely0.txt"), skiprows = 1)
 	else:
 		embeddings = np.loadtxt(os.path.join(embedding_path,"Origin"), skiprows = 1)
 
@@ -116,8 +117,10 @@ def train_and_test(eval_path, embedding_path):
 	for i in xrange(len(indices_bag_train)):
 		for j in xrange(len(indices_bag_test)):
 			accuracy, f1 = train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_map, indices_bag_train[i], indices_bag_test[j])
-			logger.info("accuracy: %f", accuracy)
-			logger.info("f1: %f", f1)
+			# logger.info("accuracy: %f", accuracy)
+			# logger.info("f1: %f", f1)
+			print "accuracy: ", accuracy
+			print "f1: ", f1
 			print "-------------------------------------"
 	return accuracy, f1
 

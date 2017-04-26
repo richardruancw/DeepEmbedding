@@ -130,10 +130,10 @@ int main(int argc, char* argv[]) {
           FOut.PutCh(' ');
         }
         
-        for (int j = 0; j < EmbeddingsHVSuperNet.GetDat(i).Len(); j++) {
-          FOut.PutFlt(EmbeddingsHVSuperNet.GetDat(i)[j]);
-          FOut.PutCh(' ');
-        }
+        // for (int j = 0; j < EmbeddingsHVSuperNet.GetDat(i).Len(); j++) {
+        //   FOut.PutFlt(EmbeddingsHVSuperNet.GetDat(i)[j]);
+        //   FOut.PutCh(' ');
+        // }
         
         FOut.PutLn();
     }
