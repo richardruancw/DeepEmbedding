@@ -20,7 +20,7 @@ def constructNet(filename, sep, weighted = True):
 		
 		if f.readline() == "":
 			break
-	print G.getNodes()
+			
 	return G, weightMap
 
 def generateNeg(G,negLinks,seen, numNeg, numPos):
