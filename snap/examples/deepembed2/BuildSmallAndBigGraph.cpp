@@ -39,7 +39,6 @@ void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C,
 				
 				smallNet->AddEdge(nodeId, targetId,weight12);
 				smallNet->AddEdge(targetId, nodeId, weight21);
-
 			}
 
 			assert(smallNet->IsEdge(nodeId, targetId) == true);
@@ -139,7 +138,7 @@ void writeOutGraph(std::string & GraphFolder, std::string & name,PWNet & Net){
 		FOut.PutCh(' ');
 		FOut.PutInt(EI.GetDstNId());
 		FOut.PutCh(' ');
-		FOut.PutInt(EI.GetDat());
+		FOut.PutFlt(EI.GetDat());
 		FOut.PutLn();
 	}
 }
@@ -181,7 +180,6 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
     	fflush(stdout);
 	}
 	printf("\n");
-	
 	std::cout<<"start building super graph! \n"<<std::endl;
 	//super graph construction
 	for(int i = 0; i < weightVec.size(); i++){
