@@ -200,7 +200,7 @@ void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C
 	while (NumSettledNodes < InNet->GetNodes() && LastSettleNodes!= NumSettledNodes) {
 		printf("Before the %d round of merging, we have %d nodes, target is %d\n", ++Round, NumSettledNodes, InNet->GetNodes());
 		LastSettleNodes = NumSettledNodes;
-		#pragma omp parallel for schedule(dynamic)
+		//#pragma omp parallel for schedule(dynamic)
 		for (int i = 0; i < NewC2N.size(); i++) {
 			TempActiveBoundary.push_back(std::vector<int> ());
 			GetNewActiveBoundaryForOneGroup(Round, InNet, i, ActiveBoundary, TempActiveBoundary, N2C, OldC2NewC);
