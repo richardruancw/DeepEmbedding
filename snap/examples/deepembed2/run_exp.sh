@@ -1,20 +1,46 @@
 #!/bin/bash 
 
-GRAPH_NAME="facebook_combined.edgelist"
-
+# Learning n2v
+GRAPH_NAME=facebook_combined.edgelist
 NUM_PARTITION=2
+NUM_DIM=10
+NUM_Q_n2v=0.5
+NUM_P_n2v=0.3
+NUM_WALKLEN=30
+NUM_COM=100
+NUM_UPDATE_RATE=0.3
+
+# Evaluation
+NUM_BATCH_SIZE=10000
+
+
+# If weighted ="-w" else =""
+CHOICE_WEIGHTED=""
+# If weighted ="-dr" else =""
+CHOICE_DIRECTED=""
+# If verbose ="-v"
+CHOICE_VERBOSE="-v"
+
+
+GRAPH_FULL_PATH=graph/
+GRAPH_FULL_PATH+=$GRAPH_NAME
 
 GRAPH_PREFIX="node2vec"
 TRAIN_PREFIX="train"
 TEST_PREFIX="test"
+EMBEDDING_PREFIX="outemb"
 
-python split.py $GRAPH_NAME $NUM_PARTITIO
+python split.py $NUM_PARTITION $GRAPH_FULL_PATH
 
 let "COUNT=$NUM_PARTITION - 1"
 for i in `seq 0 $COUNT`;
 do
         GRAPH_TRAIN=$GRAPH_PREFIX
         GRAPH_TRAIN+=$i
-        ./deepembed2 -i:eval/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/outemb0.txt -stats:./stats/stats_hope.txt -l:10 -d:24 -p:0.3  -q:0.5 -v -s:20 -nc:100 -ut:0.3
-
+        # run our node2vec on this training graph
+        EMBEDDING_TRAIN=$EMBEDDING_PREFIX
+        EMBEDDING_TRAIN+=$i
+        EMBEDDING_TRIAN+=".txt"
+        ./deepembed2 -i:graph/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/$EMBEDDING_TRAIN -stats:./stats/stats_hope.txt -l:$NUM_WALKLEN -d:$NUM_DIM -p:$NUM_P_n2v  -q:$NUM_Q_n2v $CHOICE_VERBOSE -nc:$NUM_COM -ut:$NUM_UPDATE_RATE $CHOICE_DIRECTED $CHOICE_WEIGHTED
+        python down_stream_eval.py -b:$NUM_BATCH_SIZE -d:$NUM_DIM -r:$i -ours:1
 done
