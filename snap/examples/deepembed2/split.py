@@ -20,7 +20,7 @@ def constructNet(filename, sep, weighted = True):
 		
 		if f.readline() == "":
 			break
-			
+
 	return G, weightMap
 
 def generateNeg(G,negLinks,seen, numNeg, numPos):
@@ -68,7 +68,7 @@ def writeTrainTestFile(k, posRemovable, posNonRemovable, negLinks):
 		train = open("eval/train"+str(i), "w")
 		test = open("eval/test"+str(i), "w")
 
-		node2vec = open("node2vec"+str(i),"w")
+		node2vec = open("graph/node2vec"+str(i),"w")
 		
 		# first write out negative samples
 		for index in xrange(len(negLinks)):
