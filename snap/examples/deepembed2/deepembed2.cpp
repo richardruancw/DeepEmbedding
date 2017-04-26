@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
   PWNet SuperNet = PWNet::New();
   TVec<PWNet> NetVector;
   BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet);
-  // Or
+  // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
 
   //End of partition, timing
   std::clock_t end = std::clock();
@@ -130,10 +130,10 @@ int main(int argc, char* argv[]) {
           FOut.PutCh(' ');
         }
         
-        // for (int j = 0; j < EmbeddingsHVSuperNet.GetDat(i).Len(); j++) {
-        //   FOut.PutFlt(EmbeddingsHVSuperNet.GetDat(i)[j]);
-        //   FOut.PutCh(' ');
-        // }
+        for (int j = 0; j < EmbeddingsHVSuperNet.GetDat(i).Len(); j++) {
+          FOut.PutFlt(EmbeddingsHVSuperNet.GetDat(i)[j]);
+          FOut.PutCh(' ');
+        }
         
         FOut.PutLn();
     }
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
   }
   
   // std::cout<<NewGraphFolder<<std::endl;
-  // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
+  
   
   return 0;
 }
