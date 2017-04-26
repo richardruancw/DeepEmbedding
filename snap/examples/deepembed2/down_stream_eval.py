@@ -13,14 +13,15 @@ def parseArgs(args):
 	batch_size = int(args[1].split(":")[1])
 	d = int(args[2].split(":")[1])
 	game_round = args[3].split(":")[1]
+	ours =int(args[4].split(":")[1])
 
-	return batch_size, d, game_round
+	return batch_size, d, game_round, ours
 
-def load_train_test(eval_path, embedding_path, our_embedding = False):
+def load_train_test(eval_path, embedding_path, ours):
 	train = np.loadtxt(os.path.join(eval_path,"train"+game_round))
 	test = np.loadtxt(os.path.join(eval_path,"test"+game_round))
 	batch_size_test = test.shape[0]
-	if our_embedding:
+	if ours == 1:
 		embeddings = np.loadtxt(os.path.join(embedding_path,"outemb"+game_round+".txt"), skiprows = 1)
 		 # embeddings = np.loadtxt(os.path.join(embedding_path,"outemb_lonely0.txt"), skiprows = 1)
 	else:
@@ -105,9 +106,9 @@ def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_m
 
 	return accuracy, f1
 
-def train_and_test(eval_path, embedding_path):
+def train_and_test(eval_path, embedding_path, ours):
 	logger.info("Loading train test data and embeddings")
-	train_x, train_y, test_x, test_y, embedding_map, batch_size_test = load_train_test(eval_path, embedding_path)
+	train_x, train_y, test_x, test_y, embedding_map, batch_size_test = load_train_test(eval_path, embedding_path,ours)
 	model = SGDClassifier()
 
 	indices_bag_train = giveBatchIndices(batch_size, train_x.shape[0])
@@ -117,8 +118,8 @@ def train_and_test(eval_path, embedding_path):
 	for i in xrange(len(indices_bag_train)):
 		for j in xrange(len(indices_bag_test)):
 			accuracy, f1 = train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_map, indices_bag_train[i], indices_bag_test[j])
-			# logger.info("accuracy: %f", accuracy)
-			# logger.info("f1: %f", f1)
+			logger.info("accuracy: %f", accuracy)
+			logger.info("f1: %f", f1)
 			print "accuracy: ", accuracy
 			print "f1: ", f1
 			print "-------------------------------------"
@@ -151,12 +152,12 @@ if __name__ == "__main__":
 	logger.addHandler(handler)
 
 	args = sys.argv
-	if len(args) != 4:
-		print "Usage: python down_stream_eval.py -b:batch_size -d:feature_dim, -r:which_round"
+	if len(args) != 5:
+		print "Usage: python down_stream_eval.py -b:batch_size -d:feature_dim -r:which_round -ours:0or1"
 		sys.exit()
 
-	batch_size, d, game_round = parseArgs(args)
-	accuracy, f1 = train_and_test(eval_path, embedding_path)
+	batch_size, d, game_round, ours = parseArgs(args)
+	accuracy, f1 = train_and_test(eval_path, embedding_path, ours)
 	with open(os.path.join(output_stats_path, "down_stream_results"),"a") as f:
 		f.write(" ".join([game_round, str(accuracy), str(f1)]))
 		f.write("\n")

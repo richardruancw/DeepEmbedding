@@ -114,7 +114,7 @@ to the weight between them and community i*/
 			}
 			if(! SuperNet->IsEdge(i, neighbor)){
 				SuperNet->AddEdge(i, neighbor, weight);
-				SuperNet->AddEdge(neighbor,i,weight);
+				SuperNet->AddEdge(neighbor,i, weight);
 			}
 		}
 		if(i % 1 == 0){
