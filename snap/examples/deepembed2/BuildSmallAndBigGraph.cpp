@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <algorithm>
 #include "biasedrandomwalk.h"
 #include "BuildSmallAndBigGraph.h"
 
@@ -68,10 +69,10 @@ void BuildSmallAndBigGraphToMemory(PWNet & InNet, std::vector< std::vector<int> 
 	THash<TInt, TInt> & N2C, TVec<PWNet> & NetVector, PWNet & SuperNet){
 	
 	std::vector<THash<TInt, TInt> > weightVec;
-	std::vector<int> conductances;
 	std::cout<<"start building small graphs \n"<<std::endl;
+	std::vector<int> inEdgeCounts;
 	//for each commuinity
-	#pragma omp parallel for schedule(dynamic)
+	// #pragma omp parallel for schedule(dynamic)
 	for(int i = 0; i < C2N.size(); i++){
 /*create a new hashtable, then weightVec[i] is a hashtable mapping the other community
 to the weight between them and community i*/
@@ -84,12 +85,12 @@ to the weight between them and community i*/
 		int inEdgeCount = 0;
 		//for each node in current comminity
 		for(int j = 0; j < C2N[i].size(); j++){
-			// computeWeight(OriginNet, j, N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
 			computeWeight(InNet, C2N[i][j], N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
 		}
-		conductances.push_back((double)outEdgeCount/(double)inEdgeCount);
 		NetVector.Add(smallNet);
-
+		
+		inEdgeCounts.push_back(inEdgeCount);
+		
 		if(!TSnap::IsWeaklyConn<PWNet>(smallNet)){
 			printf("not connected ! %d size %d \n", i, smallNet->GetNodes());
 			printf("cluster size should be %d \n", C2N[i].size());
@@ -109,12 +110,15 @@ to the weight between them and community i*/
 		for(THash<TInt, TInt>::TIter HashI = weightVec[i].BegI(); HashI < weightVec[i].EndI(); HashI++){
 			int neighbor = (*HashI).Key;
 			int weight = (*HashI).Dat;
+			
+			assert(i < neighbor);
+			
 			if(! SuperNet->IsNode(neighbor)){
 				SuperNet->AddNode(neighbor);
 			}
 			if(! SuperNet->IsEdge(i, neighbor)){
-				SuperNet->AddEdge(i, neighbor, weight);
-				SuperNet->AddEdge(neighbor,i, weight);
+				SuperNet->AddEdge(i,neighbor, (double)weight/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+				SuperNet->AddEdge(neighbor,i, (double)weight/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
 			}
 		}
 		if(i % 1 == 0){
@@ -147,9 +151,9 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 	// OriginNet = TSnap::ConvertGraph<PUNGraph, PWNet> (InNet);
 
 	std::vector<THash<TInt, TInt> > weightVec;
-	std::vector<int> conductances;
 	std::cout<<"start building small graphs"<<std::endl;
 	PWNet SuperNet = PWNet::New();
+	std::vector<int> inEdgeCounts;
 	//for each commuinity
 	for(int i = 0; i < C2N.size(); i++){
 		// create a new hashtable, then weightVec[i] is a hashtable mapping the other community
@@ -165,8 +169,8 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 		for(int j = 0; j < C2N[i].size(); j++){
 			computeWeight(InNet, C2N[i][j], N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
 		}
-		conductances.push_back((double)outEdgeCount/(double)inEdgeCount);
 
+		inEdgeCounts.push_back(inEdgeCount);
 		std::string name;
 		std::ostringstream convert;
 		convert << i;
@@ -187,12 +191,13 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 		for(THash<TInt, TInt>::TIter HashI = weightVec[i].BegI(); HashI < weightVec[i].EndI(); HashI++){
 			int neighbor = (*HashI).Key;
 			int weight = (*HashI).Dat;
+			assert(i < neighbor);
 			if(! SuperNet->IsNode(neighbor)){
 				SuperNet->AddNode(neighbor);
 			}
-			if(! SuperNet->IsEdge(i, neighbor)){
-				SuperNet->AddEdge(i, neighbor, weight);
-				SuperNet->AddEdge(neighbor,i,weight);
+			if(! SuperNet->IsEdge(i,neighbor)){
+				SuperNet->AddEdge(i,neighbor,(double)weight/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+				SuperNet->AddEdge(neighbor,i,(double)weight/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
 			}
 		}
 		if(i % 1 == 0){
