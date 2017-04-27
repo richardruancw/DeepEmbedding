@@ -29,5 +29,5 @@ if __name__ == "__main__":
 	origin_time = ReadTimeCost(output_stats_path, True)
 
 	with open(os.path.join(output_stats_path, "cpp_time_cost"),"a") as f:
-		f.write(" ".join([partition_time, super_net_time, small_net_max, origin_time]))
+		f.write(" ".join([str(x) for x in [partition_time, super_net_time, small_net_max, origin_time]]))
 		f.write("\n")
