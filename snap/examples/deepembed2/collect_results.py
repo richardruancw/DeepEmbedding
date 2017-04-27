@@ -45,17 +45,17 @@ if __name__ == "__main__":
 
 	with open(os.path.join(output_stats_path, "combined_results"), "w") as f:
 		f.write("Our methods\n")
-		f.write(" ".join("acc:", acc_mean, "acc std:", acc_std, "f1 mean:", f1_mean, "f1 std:", f1_std))
+		f.write(" ".join("acc:", str(acc_mean), "acc std:", str(acc_std), "f1 mean:", str(f1_mean), "f1 std:", str(f1_std)))
 		f.write("\n")
 		f.write("Origin node2vec\n")
-		f.write(" ".join("acc:", acc_mean_origin, "acc std:", acc_std_origin, "f1 mean:", f1_mean_origin, "f1 std:", f1_std_origin))
+		f.write(" ".join("acc:", str(acc_mean_origin), "acc std:", str(acc_std_origin), "f1 mean:", str(f1_mean_origin), "f1 std:", str(f1_std_origin)))
 		f.write("\n")
 		f.write("Our methods, time cost:\n")
-		f.write(" ".join("parition mean time", partition_time_mean, "partition time std", partition_time_std, "super net mean time", super_net_time_mean,
-			"super net time std", super_net_time_std, "small net max mean", small_net_max_mean, "small net max std", small_net_max_std))
+		f.write(" ".join("parition mean time", str(partition_time_mean), "partition time std", str(partition_time_std), "super net mean time", str(super_net_time_mean),
+			"super net time std", str(super_net_time_std), "small net max mean", str(small_net_max_mean), "small net max std", str(small_net_max_std)))
 		f.write("\n")
 		f.write("The origin method, time cost\n")
-		f.write(" ".join("origin mean time", origin_mean, "origin time std", origin_std))
+		f.write(" ".join("origin mean time", str(origin_mean), "origin time std", str(origin_std)))
 
 
 
