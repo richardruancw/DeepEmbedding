@@ -28,9 +28,10 @@ def ReadTimeCost(output_stats_path):
 			res = [float(x) for x in line.split()]
 			parition.append(res[0])
 			super_net.append(res[1])
-			small_net_max.append(res[2])
-			origin.append(res[3])
-	return np.mean(parition), np.std(parition), np.mean(super_net), np.std(super_net), np.mean(small_net_max), np.std(small_net_max), np.mean(origin), np.std(origin)
+			small_net_sum.append(res[2])
+			small_net_mean.append(res[3])
+			origin.append(res[4])
+	return np.mean(parition), np.std(parition), np.mean(super_net), np.std(super_net), np.mean(small_net_sum), np.std(small_net_sum), np.mean(small_net_mean), np.std(small_net_mean, np.mean(origin), np.std(origin)
 
 
 if __name__ == "__main__":
@@ -41,7 +42,7 @@ if __name__ == "__main__":
 
 	acc_mean, acc_std, f1_mean, f1_std = ReadEvaluation(output_stats_path, "")
 	acc_mean_origin, acc_std_origin, f1_mean_origin, f1_std_origin = ReadEvaluation(output_stats_path, "_origin")
-	partition_time_mean, partition_time_std, super_net_time_mean, super_net_time_std, small_net_max_mean, small_net_max_std, origin_mean, origin_std = ReadTimeCost(output_stats_path)
+	partition_time_mean, partition_time_std, super_net_time_mean, super_net_time_std, small_net_sum_mean, small_net_sum_std, small_net_mean_mean, small_net_mean_std, origin_mean, origin_std = ReadTimeCost(output_stats_path)
 
 	with open(os.path.join(output_stats_path, "combined_results"), "w") as f:
 		f.write("Our methods\n")

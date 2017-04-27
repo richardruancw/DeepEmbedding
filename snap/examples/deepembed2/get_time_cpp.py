@@ -17,7 +17,7 @@ def ReadTimeCost(output_stats_path, origin = False):
 				super_net_time = float(line)
 			else:
 				small_net_time = [float(x) for x in line.split()]
-	return partition_time, super_net_time, np.max(small_net_time)
+	return partition_time, super_net_time, np.sum(small_net_time), np.mean(small_net_time)
 
 if __name__ == "__main__":
 	# generate_fake_data(data_path)
@@ -25,9 +25,9 @@ if __name__ == "__main__":
 	embedding_path = "embeddings/"
 	output_stats_path = "stats/"
 
-	partition_time, super_net_time, small_net_max = ReadTimeCost(output_stats_path)
+	partition_time, super_net_time, small_net_sum, small_net_mean = ReadTimeCost(output_stats_path)
 	origin_time = ReadTimeCost(output_stats_path, True)
 
 	with open(os.path.join(output_stats_path, "cpp_time_cost"),"a") as f:
-		f.write(" ".join([str(x) for x in [partition_time, super_net_time, small_net_max, origin_time]]))
+		f.write(" ".join([str(x) for x in [partition_time, super_net_time, small_net_sum, small_net_mean, origin_time]]))
 		f.write("\n")
