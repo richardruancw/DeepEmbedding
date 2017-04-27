@@ -17,7 +17,7 @@ def ReadEvaluation(output_stats_path, post_fix):
 	with open(os.path.join(output_stats_path, "down_stream_results" + post_fix),"r") as f:
 		for line in f:
 			res = [float(x) for x in line.split()]
-			acc.apend(res[1])
+			acc.append(res[1])
 			f1.append(res[2])
 	return np.mean(acc), np.std(acc), np.mean(f1), np.std(f1)
 

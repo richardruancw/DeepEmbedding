@@ -16,7 +16,7 @@ def ReadTimeCost(output_stats_path, origin = False):
 			elif count == 2:
 				super_net_time = float(line)
 			else:
-				small_net_time = [float(x) for x in line.split('\t')]
+				small_net_time = [float(x) for x in line.split()]
 	return partition_time, super_net_time, np.max(small_net_time)
 
 if __name__ == "__main__":
