@@ -39,8 +39,7 @@ do
         GRAPH_TRAIN+=$i
         # run our node2vec on this training graph
         EMBEDDING_TRAIN=$EMBEDDING_PREFIX
-        EMBEDDING_TRAIN+=$i
-        EMBEDDING_TRIAN+=".txt"
+        EMBEDDING_TRAIN+=$i .txt
         ./deepembed2 -i:graph/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/$EMBEDDING_TRAIN -stats:./stats/stats_hope.txt -l:$NUM_WALKLEN -d:$NUM_DIM -p:$NUM_P_n2v  -q:$NUM_Q_n2v $CHOICE_VERBOSE -nc:$NUM_COM -ut:$NUM_UPDATE_RATE $CHOICE_DIRECTED $CHOICE_WEIGHTED
         python down_stream_eval.py -b:$NUM_BATCH_SIZE -d:$NUM_DIM -r:$i -ours:1
 done
