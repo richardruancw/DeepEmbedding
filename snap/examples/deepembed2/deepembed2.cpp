@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
     std::clock_t end = std::clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     std::ofstream StatsStreamOrigin;
-    StatsStreamOrigin.open("./stats/OriginStats");
+    StatsStreamOrigin.open("./stats/OriginStats.txt");
     StatsStreamOrigin << elapsed_secs << "\n";
     return 0;
   } 

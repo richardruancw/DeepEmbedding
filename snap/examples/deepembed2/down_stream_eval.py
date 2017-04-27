@@ -158,6 +158,12 @@ if __name__ == "__main__":
 
 	batch_size, d, game_round, ours = parseArgs(args)
 	accuracy, f1 = train_and_test(eval_path, embedding_path, ours)
-	with open(os.path.join(output_stats_path, "down_stream_results"),"a") as f:
-		f.write(" ".join([game_round, str(accuracy), str(f1)]))
-		f.write("\n")
+	if ours == 1:
+		with open(os.path.join(output_stats_path, "down_stream_results"),"a") as f:
+			f.write(" ".join([game_round, str(accuracy), str(f1)]))
+			f.write("\n")
+	else:
+		with open(os.path.join(output_stats_path, "down_stream_results_origin"),"a") as f:
+			f.write(" ".join([game_round, str(accuracy), str(f1)]))
+			f.write("\n")
+
