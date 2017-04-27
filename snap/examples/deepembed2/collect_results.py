@@ -22,7 +22,7 @@ def ReadEvaluation(output_stats_path, post_fix):
 	return np.mean(acc), np.std(acc), np.mean(f1), np.std(f1)
 
 def ReadTimeCost(output_stats_path):
-	parition, super_net, small_net_max, origin = [], [], [], []
+	parition, super_net, small_net_sum, small_net_mean, origin = [], [], [], [], []
 	with open(os.path.join(output_stats_path, "cpp_time_cost"),"r") as f:
 		for line in f:
 			res = [float(x) for x in line.split()]
