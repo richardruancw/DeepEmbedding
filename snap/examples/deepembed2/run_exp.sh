@@ -36,7 +36,7 @@ EMBEDDING_PREFIX="outemb"
 
 TXT=".txt"
 
-if [$DO_PARTITION = "DO"]
+if [$DO_PARTITION -eq "DO"]
 then
 	python split.py $NUM_PARTITION $GRAPH_FULL_PATH
 fi
