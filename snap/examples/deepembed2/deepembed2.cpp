@@ -63,6 +63,10 @@ int main(int argc, char* argv[]) {
   /**************************/
 
   printf("Num of Nodes: %d\n", InNet->GetNodes());
+
+  InNet = TSnap::GetMxScc(InNet);
+  printf("Num of Nodes in MxScc: %d\n", InNet->GetNodes());
+  
   IAssert(TSnap::IsWeaklyConn(InNet));
   
   printf("Begin finding raw communities using BFS\n");
@@ -79,7 +83,8 @@ int main(int argc, char* argv[]) {
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
   printf("End loading graph\n");
 
-  printf("Num of Nodes: %d\n", InNet->GetNodes());
+  InNet = TSnap::GetMxScc(InNet);
+  printf("Num of Nodes in MxScc: %d\n", InNet->GetNodes());
 
   std::vector<std::vector<int> > NewC2N;
   // Update C2N and N2C, such that number of communities == NumCommunities.

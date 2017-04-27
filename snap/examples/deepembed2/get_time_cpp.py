@@ -5,18 +5,18 @@ def ReadTimeCost(output_stats_path, origin = False):
 	if origin:
 		with open(os.path.join(output_stats_path, "OriginStats.txt"),"r") as f:
 			for line in f:
-				return double(line)
+				return float(line)
 
 	with open(os.path.join(output_stats_path, "stats.txt"),"r") as f:
 		count = 0
 		for line in f:
 			count += 1
 			if count == 1:
-				partition_time = double(line)
+				partition_time = float(line)
 			elif count == 2:
-				super_net_time = double(line)
+				super_net_time = float(line)
 			else:
-				small_net_time = [double(x) for x in line.split('\t')]
+				small_net_time = [float(x) for x in line.split('\t')]
 	return partition_time, super_net_time, np.max(small_net_time)
 
 if __name__ == "__main__":

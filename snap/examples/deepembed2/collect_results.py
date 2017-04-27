@@ -16,7 +16,7 @@ def ReadEvaluation(output_stats_path, post_fix):
 	acc, f1 = [], []
 	with open(os.path.join(output_stats_path, "down_stream_results" + post_fix),"r") as f:
 		for line in f:
-			res = [double(x) for x in line.split()]
+			res = [float(x) for x in line.split()]
 			acc.apend(res[1])
 			f1.append(res[2])
 	return np.mean(acc), np.std(acc), np.mean(f1), np.std(f1)
@@ -25,7 +25,7 @@ def ReadTimeCost(output_stats_path):
 	parition, super_net, small_net_max, origin = [], [], [], []
 	with open(os.path.join(output_stats_path, "cpp_time_cost"),"r") as f:
 		for line in f:
-			res = [double(x) for x in line.split()]
+			res = [float(x) for x in line.split()]
 			parition.append(res[0])
 			super_net.append(res[1])
 			small_net_max.append(res[2])
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 		f.write("\n")
 		f.write("The origin method, time cost\n")
 		f.write(" ".join("origin mean time", origin_mean, "origin time std", origin_std))
-		
+
 
 
 
