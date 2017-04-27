@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-DO_PARTITION="DO"
+DO_PARTITION=1
 
 # Learning n2v
 GRAPH_NAME=facebook_combined.edgelist
@@ -36,7 +36,7 @@ EMBEDDING_PREFIX="outemb"
 
 TXT=".txt"
 
-if [$DO_PARTITION -eq "DO"]
+if [$DO_PARTITION -eq 1]
 then
 	python split.py $NUM_PARTITION $GRAPH_FULL_PATH
 fi
