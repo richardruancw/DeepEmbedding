@@ -2,6 +2,8 @@
 
 # Learning n2v
 GRAPH_NAME=facebook_combined.edgelist
+RESULT_NAME=test_result
+
 NUM_PARTITION=2
 NUM_DIM=10
 NUM_Q_n2v=0.5
@@ -47,4 +49,4 @@ do
         python down_stream_eval.py -b:$NUM_BATCH_SIZE -d:$NUM_DIM -r:$i -ours:0
 done
 
-python collect_results.py 
+python collect_results.py $RESULT_NAME

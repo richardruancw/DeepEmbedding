@@ -40,12 +40,14 @@ if __name__ == "__main__":
 	embedding_path = "embeddings/"
 	output_stats_path = "stats/"
 
+	file_name = sys.argv[1]
+
 	acc_mean, acc_std, f1_mean, f1_std = ReadEvaluation(output_stats_path, "")
 	acc_mean_origin, acc_std_origin, f1_mean_origin, f1_std_origin = ReadEvaluation(output_stats_path, "_origin")
 	partition_time_mean, partition_time_std, super_net_time_mean, super_net_time_std, small_net_sum_mean, small_net_sum_std, small_net_mean_mean, small_net_mean_std, origin_mean, origin_std = ReadTimeCost(output_stats_path)
 
 
-	with open(os.path.join(output_stats_path, "combined_results"), "w") as f:
+	with open(os.path.join(output_stats_path, file_name), "w") as f:
 		f.write("Our methods\n")
 		f.write(" ".join(["acc:", str(acc_mean), "acc std:", str(acc_std), "f1 mean:", str(f1_mean), "f1 std:", str(f1_std)]))
 		f.write("\n")
