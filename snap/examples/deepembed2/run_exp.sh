@@ -36,6 +36,10 @@ TXT=".txt"
 
 python split.py $NUM_PARTITION $GRAPH_FULL_PATH
 
+cd stats
+rm *
+cd ..
+
 let "COUNT=$NUM_PARTITION - 1"
 for i in `seq 0 $COUNT`;
 do
@@ -51,6 +55,3 @@ done
 
 python collect_results.py $RESULT_NAME
 
-cd stats
-rm *
-cd ..
