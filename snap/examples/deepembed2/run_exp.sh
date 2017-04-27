@@ -50,3 +50,7 @@ do
 done
 
 python collect_results.py $RESULT_NAME
+
+cd stats
+rm *
+cd ..
