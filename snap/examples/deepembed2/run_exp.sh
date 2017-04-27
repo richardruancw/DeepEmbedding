@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-DO_PARTITION=10
+DO_PARTITION=1
 
 # Learning n2v
 GRAPH_NAME=facebook_combined.edgelist
@@ -16,7 +16,6 @@ NUM_UPDATE_RATE=0.3
 
 # Evaluation
 NUM_BATCH_SIZE=10000
-
 
 # If weighted ="-w" else =""
 CHOICE_WEIGHTED=""
@@ -36,7 +35,7 @@ EMBEDDING_PREFIX="outemb"
 
 TXT=".txt"
 
-if [ $DO_PARTITION -eq 10 ]
+if [ $DO_PARTITION -eq 1 ]
 then
 	python split.py $NUM_PARTITION $GRAPH_FULL_PATH
 fi
