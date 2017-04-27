@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
   
   TStr InFile,OutFile, StatsFile;
   int Dimensions, WalkLen, NumWalks, WinSize, Iter, Option;
-  double ParamP, ParamQ, ShrinkFactor;
+  double ParamP, ParamQ;
   bool Directed, Weighted, Verbose;
 
   double UpdateRateThreshold;
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
   TStr GraphFolder;
 
   ParseArgs(argc, argv, InFile, OutFile, StatsFile, GraphFolder, Dimensions, WalkLen, NumWalks, WinSize,
-   Iter, NumCommunities, ShrinkFactor, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted);
+   Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted);
 
   //need a std::string as function for write to disk
   std::string NewGraphFolder = GraphFolder.GetCStr();
@@ -45,9 +45,25 @@ int main(int argc, char* argv[]) {
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
   printf("End loading graph\n");
 
+  /**************************/
+  if (Option == 0) {
+    TIntFltVH EmbeddingsHV;
+    node2vec(InNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
+    EmbeddingsHV);
+    TStr OutOrigin("./embeddings/Origin");
+    WriteOutput(OutOrigin, EmbeddingsHV);
+      //End of node2vec, timing
+    std::clock_t end = std::clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    std::ofstream StatsStreamOrigin;
+    StatsStreamOrigin.open("./stats/OriginStats");
+    StatsStreamOrigin << elapsed_secs << "\n";
+    return 0;
+  } 
+  /**************************/
+
   printf("Num of Nodes: %d\n", InNet->GetNodes());
-  InNet = TSnap::GetMxScc(InNet);
-  printf("Num of Nodes in MxScc: %d\n", InNet->GetNodes());
+  IAssert(TSnap::IsWeaklyConn(InNet));
   
   printf("Begin finding raw communities using BFS\n");
   std::vector<std::vector<int> > C2N;
@@ -55,20 +71,6 @@ int main(int argc, char* argv[]) {
 
   GetRawCommunities(InNet, C2N, N2C, UpdateRateThreshold, NumCommunities);
   printf("Get %d raw communities.\n", C2N.size());
-  // std::vector<int> s;
-  // int ss = 0;
-  // for(int i = 0; i < C2N.size(); i++){
-  //   ss += C2N[i].size();
-  //   s.push_back(C2N[i].size());
-  // }
-
-  // printf("Total covered Nodes: %d\n", ss);
-  // printf("The sizes of every communities: \n");
-  // std::sort(s.begin(), s.end());
-  // for(int i = s.size() - 1; i >= 0; i--){
-  //   printf("%d ", s[i]);
-  // }
-  // printf("\n");
 
 
   InNet.Clr();
@@ -78,8 +80,6 @@ int main(int argc, char* argv[]) {
   printf("End loading graph\n");
 
   printf("Num of Nodes: %d\n", InNet->GetNodes());
-  InNet = TSnap::GetMxScc(InNet);
-  printf("Num of Nodes in MxScc: %d\n", InNet->GetNodes());
 
   std::vector<std::vector<int> > NewC2N;
   // Update C2N and N2C, such that number of communities == NumCommunities.

@@ -6,7 +6,7 @@
 
 
 void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& StatsFile, TStr& GraphFolder,
- int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, double& ShrinkFactor,
+ int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, int& Option,
  bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted) {
 
   Env = TEnv(argc, argv, TNotify::StdNotify);
@@ -28,8 +28,8 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& Stats
    "Number of walks per source. Default is 10");
   WinSize = Env.GetIfArgPrefixInt("-k:", 10,
    "Context size for optimization. Default is 10");
-  ShrinkFactor = Env.GetIfArgPrefixFlt("-s:", 100,
-   "Shrink factor of nodes number. Default is 100");
+  Option = Env.GetIfArgPrefixFlt("-ours:", 1,
+   "Learning method. Default is 1, i.e, our's method.");
   Iter = Env.GetIfArgPrefixInt("-e:", 1,
    "Number of epochs in SGD. Default is 1");
   ParamP = Env.GetIfArgPrefixFlt("-p:", 1,
