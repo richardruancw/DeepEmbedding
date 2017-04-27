@@ -54,7 +54,8 @@ if __name__ == "__main__":
 		f.write("\n")
 		f.write("Our methods, time cost:\n")
 		f.write(" ".join(["parition mean time", str(partition_time_mean), "partition time std", str(partition_time_std), "super net mean time", str(super_net_time_mean),
-			"super net time std", str(super_net_time_std), "small net max mean", str(small_net_max_mean), "small net max std", str(small_net_max_std)]))
+			"super net time std", str(super_net_time_std), "small net sum mean", str(small_net_sum_mean), "small net sum std", str(small_net_sum_std), "small net mean mean", str(small_net_mean_mean),
+			"small net mean std", str(small_net_mean_std)]))
 		f.write("\n")
 		f.write("The origin method, time cost\n")
 		f.write(" ".join(["origin mean time", str(origin_mean), "origin time std", str(origin_std)]))
