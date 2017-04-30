@@ -3,11 +3,11 @@
 DO_PARTITION=1
 
 # Learning n2v
-GRAPH_NAME=facebook_combined.edgelist
+GRAPH_NAME=com-amazon-ws.txt
 RESULT_NAME=test_result
 
-NUM_PARTITION=2
-NUM_DIM=10
+NUM_PARTITION=3
+NUM_DIM=24
 NUM_Q_n2v=0.5
 NUM_P_n2v=0.3
 NUM_WALKLEN=30

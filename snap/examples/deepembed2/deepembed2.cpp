@@ -96,7 +96,8 @@ int main(int argc, char* argv[]) {
 
   PWNet SuperNet = PWNet::New();
   TVec<PWNet> NetVector;
-  BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet);
+  bool BuildSmallGraphNow = true;
+  BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet, BuildSmallGraphNow);
   // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
 
   //End of partition, timing
