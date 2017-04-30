@@ -11,7 +11,7 @@
 void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C, 
 	int & outEdgeCount, int & inEdgeCount, 
 	int & clusterId,std::vector<THash<TInt, TInt> > & weightVec,
-	PWNet & smallNet){
+	PWNet & smallNet, bool & BuildSmallGraphNow){
 
 	//get current node
 	TWNet::TNodeI currentNode = InNet->GetNI(nodeId);
@@ -26,22 +26,25 @@ void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C,
 		if(targetClusterId == clusterId){
 			inEdgeCount++;
 
-			if(!smallNet->IsNode(nodeId)){
-				smallNet->AddNode(nodeId);
-			}	
-			if(! smallNet->IsNode(targetId)){
-				smallNet->AddNode(targetId);
-			}
-			if(! smallNet->IsEdge(nodeId, targetId)){
+			if(BuildSmallGraphNow){
+				if(!smallNet->IsNode(nodeId)){
+					smallNet->AddNode(nodeId);
+				}	
+				if(! smallNet->IsNode(targetId)){
+					smallNet->AddNode(targetId);
+				}
+				if(! smallNet->IsEdge(nodeId, targetId)){
 
-				weight12 = InNet->GetEDat(nodeId, targetId);
-				weight21 = InNet->GetEDat(targetId, nodeId);
-				
-				smallNet->AddEdge(nodeId, targetId,weight12);
-				smallNet->AddEdge(targetId, nodeId, weight21);
-			}
+					weight12 = InNet->GetEDat(nodeId, targetId);
+					weight21 = InNet->GetEDat(targetId, nodeId);
+					
+					smallNet->AddEdge(nodeId, targetId,weight12);
+					smallNet->AddEdge(targetId, nodeId, weight21);
+				}
 
-			assert(smallNet->IsEdge(nodeId, targetId) == true);
+				assert(smallNet->IsEdge(nodeId, targetId) == true);
+			}
+			
 		}else{
 /* else the neighbor belongs to other cluster, increment out-cluster-edge count, 
 this is a bdy node*/
@@ -70,6 +73,7 @@ void BuildSmallAndBigGraphToMemory(PWNet & InNet, std::vector< std::vector<int> 
 	std::vector<THash<TInt, TInt> > weightVec;
 	std::cout<<"start building small graphs \n"<<std::endl;
 	std::vector<int> inEdgeCounts;
+	bool BuildSmallGraphNow = true;
 	//for each commuinity
 	// #pragma omp parallel for schedule(dynamic)
 	for(int i = 0; i < C2N.size(); i++){
@@ -84,7 +88,7 @@ to the weight between them and community i*/
 		int inEdgeCount = 0;
 		//for each node in current comminity
 		for(int j = 0; j < C2N[i].size(); j++){
-			computeWeight(InNet, C2N[i][j], N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
+			computeWeight(InNet, C2N[i][j], N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet, BuildSmallGraphNow);
 		}
 		NetVector.Add(smallNet);
 		
@@ -153,6 +157,7 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 	std::cout<<"start building small graphs"<<std::endl;
 	PWNet SuperNet = PWNet::New();
 	std::vector<int> inEdgeCounts;
+	bool BuildSmallGraphNow = true;
 	//for each commuinity
 	for(int i = 0; i < C2N.size(); i++){
 		// create a new hashtable, then weightVec[i] is a hashtable mapping the other community
@@ -166,7 +171,7 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 		int inEdgeCount = 0;
 		//for each node in current comminity
 		for(int j = 0; j < C2N[i].size(); j++){
-			computeWeight(InNet, C2N[i][j], N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet);
+			computeWeight(InNet, C2N[i][j], N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet, BuildSmallGraphNow);
 		}
 
 		inEdgeCounts.push_back(inEdgeCount);
@@ -205,4 +210,77 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 		std::string name = "super_graph";
 		writeOutGraph(GraphFolder,name , SuperNet);
 	}
+}
+
+void BuildSuperGraphToMemory(PWNet & InNet, std::vector< std::vector<int> > & C2N, 
+	THash<TInt, TInt> & N2C, PWNet & SuperNet){
+
+	std::vector<THash<TInt, TInt> > weightVec;
+	std::cout<<"start building small graphs \n"<<std::endl;
+	std::vector<int> inEdgeCounts;
+	bool BuildSmallGraphNow = false;
+	//for each commuinity
+	// #pragma omp parallel for schedule(dynamic)
+	for(int i = 0; i < C2N.size(); i++){
+/*create a new hashtable, then weightVec[i] is a hashtable mapping the other community
+to the weight between them and community i*/
+		THash<TInt, TInt>  OtherCluster2Weight;
+		weightVec.push_back(OtherCluster2Weight);
+		
+		PWNet smallNet = PWNet::New();
+
+		int outEdgeCount = 0;
+		int inEdgeCount = 0;
+		//for each node in current comminity
+		for(int j = 0; j < C2N[i].size(); j++){
+			computeWeight(InNet, C2N[i][j], N2C, outEdgeCount, inEdgeCount, i, weightVec, smallNet, BuildSmallGraphNow);
+		}
+		NetVector.Add(smallNet);
+		
+		inEdgeCounts.push_back(inEdgeCount);
+		
+		if(!TSnap::IsWeaklyConn<PWNet>(smallNet)){
+			printf("not connected ! %d size %d \n", i, smallNet->GetNodes());
+			printf("cluster size should be %d \n", C2N[i].size());
+		}
+		printf("\rBuilding small graph process: %2lf%%",100*(double)(i+1)/(double)C2N.size());
+    	fflush(stdout);
+    	
+	}
+	printf("\n");
+	std::cout<<"finish building small graphs, there are "<<NetVector.Len()<<" in total"<<std::endl;
+	std::cout<<"start building super graph!"<<std::endl;
+	//super graph construction
+	for(int i = 0; i < weightVec.size(); i++){
+		if(!SuperNet->IsNode(i)){
+			SuperNet->AddNode(i);
+		}
+		for(THash<TInt, TInt>::TIter HashI = weightVec[i].BegI(); HashI < weightVec[i].EndI(); HashI++){
+			int neighbor = (*HashI).Key;
+			int weight = (*HashI).Dat;
+			
+			assert(i < neighbor);
+			
+			if(! SuperNet->IsNode(neighbor)){
+				SuperNet->AddNode(neighbor);
+			}
+			if(! SuperNet->IsEdge(i, neighbor)){
+				SuperNet->AddEdge(i,neighbor, (double)weight/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+				SuperNet->AddEdge(neighbor,i, (double)weight/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+			}
+		}
+		if(i % 1 == 0){
+			printf("\rBuilding super graph process: %2lf%%",100*(double)(i+1)/(double)weightVec.size());
+    		fflush(stdout);
+		}
+	}
+	printf("\n");
+
+}
+
+void MergeSmallSuperNodes(std::vector< std::vector<int> > & C2N, 
+	THash<TInt, TInt> & N2C, TVec<PWNet> & NetVector, PWNet & SuperNet, 
+	TVec<PWNet> & NetVector, int & threshold){
+
+
 }
