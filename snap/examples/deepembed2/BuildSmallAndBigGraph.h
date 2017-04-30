@@ -6,6 +6,8 @@ void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C,
 	int & clusterId,std::vector<THash<TInt, TInt> > & weightVec,
 	PWNet & smallNet, bool & BuildSmallGraphNow);
 
+void SuperGraphConsturction(PWNet & SuperNet, std::vector<int> & inEdgeCounts, std::vector<THash<TInt, TInt> > outEdgeMaps);
+
 void BuildSmallAndBigGraphToMemory(PWNet & InNet, std::vector< std::vector<int> > & C2N, 
 	THash<TInt, TInt> & N2C, TVec<PWNet> & NetVector, PWNet & SuperNet);
 

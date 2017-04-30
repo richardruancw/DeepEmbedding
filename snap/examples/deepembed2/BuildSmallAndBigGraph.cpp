@@ -8,6 +8,33 @@
 #include "biasedrandomwalk.h"
 #include "BuildSmallAndBigGraph.h"
 
+void SuperGraphConsturction(PWNet & SuperNet, std::vector<int> & inEdgeCounts, std::vector<THash<TInt, TInt> > outEdgeMaps){
+	//super graph construction
+	for(int i = 0; i < outEdgeMaps.size(); i++){
+		if(!SuperNet->IsNode(i)){
+			SuperNet->AddNode(i);
+		}
+		for(THash<TInt, TInt>::TIter HashI = outEdgeMaps[i].BegI(); HashI < outEdgeMaps[i].EndI(); HashI++){
+			int neighbor = (*HashI).Key;
+			int interClusterEdgeCount = (*HashI).Dat;
+			
+			assert(i < neighbor);
+			
+			if(! SuperNet->IsNode(neighbor)){
+				SuperNet->AddNode(neighbor);
+			}
+			if(! SuperNet->IsEdge(i, neighbor)){
+				SuperNet->AddEdge(i,neighbor, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+				SuperNet->AddEdge(neighbor,i, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+			}
+		}
+		if(i % 1 == 0){
+			printf("\rBuilding super graph process: %2lf%%",100*(double)(i+1)/(double)outEdgeMaps.size());
+    		fflush(stdout);
+		}
+	}
+}
+
 void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C, 
 	int & outEdgeCount, int & inEdgeCount, 
 	int & clusterId,std::vector<THash<TInt, TInt> > & weightVec,
@@ -239,30 +266,8 @@ to the weight between them and community i*/
 	}
 	printf("finish counting edges \n");
 	std::cout<<"start building super graph!"<<std::endl;
-	//super graph construction
-	for(int i = 0; i < outEdgeMaps.size(); i++){
-		if(!SuperNet->IsNode(i)){
-			SuperNet->AddNode(i);
-		}
-		for(THash<TInt, TInt>::TIter HashI = outEdgeMaps[i].BegI(); HashI < outEdgeMaps[i].EndI(); HashI++){
-			int neighbor = (*HashI).Key;
-			int interClusterEdgeCount = (*HashI).Dat;
-			
-			assert(i < neighbor);
-			
-			if(! SuperNet->IsNode(neighbor)){
-				SuperNet->AddNode(neighbor);
-			}
-			if(! SuperNet->IsEdge(i, neighbor)){
-				SuperNet->AddEdge(i,neighbor, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
-				SuperNet->AddEdge(neighbor,i, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
-			}
-		}
-		if(i % 1 == 0){
-			printf("\rBuilding super graph process: %2lf%%",100*(double)(i+1)/(double)outEdgeMaps.size());
-    		fflush(stdout);
-		}
-	}
+	SuperGraphConsturction(PWNet & SuperNet, std::vector<int> & inEdgeCounts, std::vector<THash<TInt, TInt> > outEdgeMaps);
+	
 	printf("\n");
 }
 
@@ -270,5 +275,12 @@ void MergeSmallSuperNodes(std::vector< std::vector<int> > & C2N,
 	THash<TInt, TInt> & N2C, TVec<PWNet> & NetVector, PWNet & SuperNet, 
 	TVec<PWNet> & NetVector, int & threshold, std::vector<int> & inEdgeCounts, std::vector<THash<TInt, TInt> > outEdgeMaps){
 
+	//filter out all the super nodes whose community have less than threshold nodes in the original graph, delete them from SuperNet
+
+	//run community detection algorithm on remaining graph
+
+	//update N2C, C2N, inEdgeCounts outEdgeMaps
+
+	//reconstruct small graphs and super graph
 
 }
