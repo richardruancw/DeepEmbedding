@@ -1,28 +1,12 @@
 
-snap/examples/deepembed2/deepembed2
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> origin/master
 
-snap/examples/deepembed2/stats/OriginStats
-
-snap/examples/deepembed2/embeddings/outemb0.txt
-
-snap/examples/deepembed2/embeddings/Origin
-
-snap/examples/deepembed2/stats/stats.txt
 
 <<<<<<< HEAD
-snap/examples/deepembed2/BuildSmallAndBigGraph_backup.h
-
-collapse_pandas.py
-
-collapse_spark.py
+>>>>>>> origin/master
 =======
-snap/examples/deepembed2/stats/stats.txt
-
-snap/examples/deepembed2/stats/stats.txt
-
-snap/examples/deepembed2/stats/stats.txt
-
-*.txt
-
-snap/examples/deepembed2/embeddings/outemb_lonely0.txt
 >>>>>>> origin/master
