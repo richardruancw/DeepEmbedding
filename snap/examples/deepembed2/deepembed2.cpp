@@ -25,8 +25,8 @@
 int main(int argc, char* argv[]) {
   
   TStr InFile,OutFile, StatsFile;
-  int Dimensions, WalkLen, NumWalks, WinSize, Iter, Option;
-  double ParamP, ParamQ;
+  int Dimensions, WalkLen, NumWalks, WinSize, Iter, Option, CommunityDetectionOption;
+  double ParamP, ParamQ, MergeThreshold;
   bool Directed, Weighted, Verbose;
 
   double UpdateRateThreshold;
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
   TStr GraphFolder;
 
   ParseArgs(argc, argv, InFile, OutFile, StatsFile, GraphFolder, Dimensions, WalkLen, NumWalks, WinSize,
-   Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted);
+   Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted, CommunityDetectionOption, MergeThreshold);
 
   //need a std::string as function for write to disk
   std::string NewGraphFolder = GraphFolder.GetCStr();
@@ -44,7 +44,8 @@ int main(int argc, char* argv[]) {
   printf("Begin loading graph...\n");
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
   printf("End loading graph\n");
-
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Option = 1;
   /**************************/
   if (Option == 0) {
     TIntFltVH EmbeddingsHV;
@@ -96,8 +97,21 @@ int main(int argc, char* argv[]) {
 
   PWNet SuperNet = PWNet::New();
   TVec<PWNet> NetVector;
-  bool BuildSmallGraphNow = true;
+  // bool BuildSmallGraphNow = true;
+  // BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet, BuildSmallGraphNow);
+  bool BuildSmallGraphNow = false;
+  std::vector<int> SizeVec;
+  for(int i = 0; i < NewC2N.size(); i++){
+    SizeVec.push_back(NewC2N[i].size());
+  }
   BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet, BuildSmallGraphNow);
+  
+  std::nth_element(SizeVec.begin(), SizeVec.begin()+(int)(SizeVec.size()*MergeThreshold), SizeVec.end());
+
+  int threshold = SizeVec[(int)(SizeVec.size()*MergeThreshold)];
+  printf("merge threshold is %d\n", threshold);
+  MergeSmallSuperNodes(InNet,NewC2N, N2C,NetVector,SuperNet,threshold,CommunityDetectionOption);
+
   // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
 
   //End of partition, timing

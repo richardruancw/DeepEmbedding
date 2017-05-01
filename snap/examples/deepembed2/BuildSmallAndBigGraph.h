@@ -16,7 +16,6 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 
 void writeOutGraph(std::string & GraphFolder, std::string & name,PUNGraph & Net);
 
-
 void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N, 
 	THash<TInt, TInt> & N2C, TVec<PWNet> & NetVector, PWNet & SuperNet, int & threshold, int & option);
 

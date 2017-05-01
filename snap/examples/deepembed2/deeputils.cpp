@@ -7,7 +7,8 @@
 
 void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& StatsFile, TStr& GraphFolder,
  int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, int& Option,
- bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted) {
+ bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted, 
+ int & CommunityDetectionOption, double & MergeThreshold) {
 
   Env = TEnv(argc, argv, TNotify::StdNotify);
   Env.PrepArgs(TStr::Fmt("\nAn algorithmic framework for representational learning on graphs."));
@@ -42,10 +43,15 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& Stats
   UpdateRateThreshold = Env.GetIfArgPrefixFlt("-ut:", 0.3,
    "Update rate threshold when grow raw communities. Default is 0.3");
 
+  CommunityDetectionOption = Env.GetIfArgPrefixFlt("-cdo:", 2, 
+    "Community detection algorithm to use on super graph: 1 is Girvan-Newman,2 is Clauset-Newman-Moore, 3 is Infomap. Default is Clauset-Newman-Moore");
+
+  MergeThreshold = Env.GetIfArgPrefixFlt("-mt:", 0.4, 
+    "Quantile of cluster sizes under which the cluster should be merged by community detection method. Default is 0.4");
+
   Verbose = Env.IsArgStr("-v", "Verbose output.");
   Directed = Env.IsArgStr("-dr", "Graph is directed.");
-  Weighted = Env.IsArgStr("-w", "Graph is weighted.");
-}
+  Weighted = Env.IsArgStr("-w", "Graph is weighted.");}
 
 void ReadGraph(TStr& InFile, bool& Directed, bool& Weighted, bool& Verbose, PWNet& InNet) {
   TFIn FIn(InFile);
