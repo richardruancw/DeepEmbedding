@@ -25,26 +25,17 @@
 int main(int argc, char* argv[]) {
   
   TStr InFile,OutFile, StatsFile;
-<<<<<<< Updated upstream
-  int Dimensions, WalkLen, NumWalks, WinSize, Iter, Option, CommunityDetectionOption;
+  int Dimensions, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Option, CommunityDetectionOption;
   double ParamP, ParamQ, MergeThreshold;
-=======
-  int Dimensions, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Option;
-  double ParamP, ParamQ;
->>>>>>> Stashed changes
   bool Directed, Weighted, Verbose;
 
   double UpdateRateThreshold;
   int NumCommunities;
   TStr GraphFolder;
 
-<<<<<<< Updated upstream
-  ParseArgs(argc, argv, InFile, OutFile, StatsFile, GraphFolder, Dimensions, WalkLen, NumWalks, WinSize,
-   Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted, CommunityDetectionOption, MergeThreshold);
-=======
   ParseArgs(argc, argv, InFile, OutFile, StatsFile, GraphFolder, Dimensions, SuperDimensions, WalkLen, NumWalks, WinSize,
-   Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted);
->>>>>>> Stashed changes
+   Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted, CommunityDetectionOption, MergeThreshold);
+
 
   //need a std::string as function for write to disk
   std::string NewGraphFolder = GraphFolder.GetCStr();
