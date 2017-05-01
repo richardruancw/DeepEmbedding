@@ -14,10 +14,12 @@ def parseArgs(args):
 	d = int(args[2].split(":")[1])
 	game_round = args[3].split(":")[1]
 	ours =int(args[4].split(":")[1])
+	decomp = int(args[5].split(":")[1])
+	sd = int(args[5].split(":")[1])
 
-	return batch_size, d, game_round, ours
+	return batch_size, d, game_round, ours, decomp, sd
 
-def load_train_test(eval_path, embedding_path, ours):
+def load_train_test(eval_path, embedding_path, ours, d, sd, option):
 	train = np.loadtxt(os.path.join(eval_path,"train"+game_round))
 	test = np.loadtxt(os.path.join(eval_path,"test"+game_round))
 	batch_size_test = test.shape[0]
@@ -31,7 +33,14 @@ def load_train_test(eval_path, embedding_path, ours):
 
 	for i in xrange(embeddings.shape[0]):
 		if embeddings[i,0] not in embedding_map:
-			embedding_map[embeddings[i,0]] = embeddings[i,1:]
+			if option == 'n+s':
+				embedding_map[embeddings[i,0]] = embeddings[i,1:]
+			elif option == 'n':
+				embedding_map[embeddings[i,0]] = embeddings[i,1:(1 + d)]
+			elif option == 's':
+				embedding_map[embeddings[i,0]] = embeddings[i,(d + 1):(d + 1 + sd)]
+			else:
+				raise ValueError
 	
 	del embeddings		
 	
@@ -106,9 +115,9 @@ def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_m
 
 	return accuracy, f1
 
-def train_and_test(eval_path, embedding_path, ours):
+def train_and_test(eval_path, embedding_path, ours, d, sd, decomp):
 	logger.info("Loading train test data and embeddings")
-	train_x, train_y, test_x, test_y, embedding_map, batch_size_test = load_train_test(eval_path, embedding_path,ours)
+	train_x, train_y, test_x, test_y, embedding_map, batch_size_test = load_train_test(eval_path, embedding_path,ours, d, sd, decomp)
 	model = SGDClassifier()
 
 	indices_bag_train = giveBatchIndices(batch_size, train_x.shape[0])
@@ -152,18 +161,30 @@ if __name__ == "__main__":
 	logger.addHandler(handler)
 
 	args = sys.argv
-	if len(args) != 5:
-		print "Usage: python down_stream_eval.py -b:batch_size -d:feature_dim -r:which_round -ours:0or1"
+	if len(args) != 7:
+		print "Usage: python down_stream_eval.py -b:batch_size -d:feature_dim -r:which_round -ours:0or1 -decomp:0or1"
 		sys.exit()
 
-	batch_size, d, game_round, ours = parseArgs(args)
-	accuracy, f1 = train_and_test(eval_path, embedding_path, ours)
+	batch_size, d, game_round, ours, decomp, sd = parseArgs(args)
+
+	accuracy, f1 = train_and_test(eval_path, embedding_path, ours, d, sd, 'n+s')
 	if ours == 1:
 		with open(os.path.join(output_stats_path, "down_stream_results"),"a") as f:
-			f.write(" ".join([game_round, str(accuracy), str(f1)]))
-			f.write("\n")
+				f.write(" ".join([game_round, str(accuracy), str(f1), 'n+s']))
+				f.write("\n")
+		if decomp == 1:
+			accuracy, f1 = train_and_test(eval_path, embedding_path, ours, d, sd, 's')
+			with open(os.path.join(output_stats_path, "down_stream_results"),"a") as f:
+				f.write(" ".join([game_round, str(accuracy), str(f1), 's']))
+				f.write("\n")
+			accuracy, f1 = train_and_test(eval_path, embedding_path, ours, d, sd, 'n')
+			with open(os.path.join(output_stats_path, "down_stream_results"),"a") as f:
+				f.write(" ".join([game_round, str(accuracy), str(f1), 'n']))
+				f.write("\n")
+
+
 	else:
 		with open(os.path.join(output_stats_path, "down_stream_results_origin"),"a") as f:
-			f.write(" ".join([game_round, str(accuracy), str(f1)]))
+			f.write(" ".join([game_round, str(accuracy), str(f1), 'origin']))
 			f.write("\n")
 

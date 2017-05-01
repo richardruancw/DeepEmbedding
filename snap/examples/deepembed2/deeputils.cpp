@@ -11,9 +11,14 @@
 
 
 void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& StatsFile, TStr& GraphFolder,
+<<<<<<< Updated upstream
  int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, int& Option,
  bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted, 
  int & CommunityDetectionOption, double & MergeThreshold) {
+=======
+ int& Dimensions, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, int& Option,
+ bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted) {
+>>>>>>> Stashed changes
 
   Env = TEnv(argc, argv, TNotify::StdNotify);
   Env.PrepArgs(TStr::Fmt("\nAn algorithmic framework for representational learning on graphs."));
@@ -27,7 +32,9 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& Stats
   GraphFolder = Env.GetIfArgPrefixStr("-out:", "",
    "Output community graph folder");
   Dimensions = Env.GetIfArgPrefixInt("-d:", 128,
-   "Number of dimensions. Default is 128");
+   "Number of dimensions for small community. Default is 128");
+  SuperDimensions = Env.GetIfArgPrefixInt("-sd:", Dimensions,
+   "Number of dimensions for supper graph. Default is same with small community");
   WalkLen = Env.GetIfArgPrefixInt("-l:", 80,
    "Length of walk per source. Default is 80");
   NumWalks = Env.GetIfArgPrefixInt("-r:", 10,
