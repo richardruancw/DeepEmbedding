@@ -303,7 +303,6 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 	// }	
 	
 	BuildSmallAndBigGraphToMemory(InNet, NewC2N, NewN2C, NetVector, SuperNet, BuildSmallGraphNow);
-	
 	printf("original number of partitions %d, new number of partitions %d \n", C2N.size(), NewC2N.size());
 
 	printf("new partition sizes: \n");
@@ -317,7 +316,6 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 		NewSize+=NewC2N[i].size();
 	}
 	assert(OldSize == NewSize);
-
 	C2N = NewC2N;
 	N2C = NewN2C;
 }
