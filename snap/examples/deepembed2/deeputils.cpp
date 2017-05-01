@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "n2v.h"
 
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <utility>
+
 #include <vector>
 #include <algorithm>
 
@@ -174,6 +179,50 @@ void SelectRepresentativeNodes(PWNet& InNet, THashSet<TInt>& RepresentativeNodes
 
 }
 
+
+void LearnAndWriteOutputEmbeddingForAll(TStr& OutFile, std::ofstream& StatsStream, PWNet& SuperNet, TVec<PWNet>& NetVector,
+  double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose) {
+    //Super-graph node2vec
+  std::clock_t begin = std::clock();
+  TIntFltVH EmbeddingsHVSuperNet;
+  node2vec(SuperNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
+    EmbeddingsHVSuperNet);
+  std::clock_t end = std::clock();
+  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+  StatsStream << elapsed_secs << "\n";
+
+  //Small-graph node2vec
+  printf("Start learning for small net");
+  TFOut FOut(OutFile);
+  FOut.PutCh(' ');
+  FOut.PutLn();
+  for (int i = 0; i < NetVector.Len(); i++) {
+    begin = std::clock();
+    printf("This for the %d cluster\n", i);
+    TIntFltVH EmbeddingsHVSmallNet;
+    PWNet CurrSmallNet = NetVector[i];
+    node2vec(CurrSmallNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
+    EmbeddingsHVSmallNet);
+    for (TIntFltVH::TIter iter = EmbeddingsHVSmallNet.BegI(); iter < EmbeddingsHVSmallNet.EndI(); iter++) {
+        FOut.PutInt(iter->Key);
+        FOut.PutCh(' ');
+        for (int j = 0; j < (iter->Dat).Len(); j++) {
+          FOut.PutFlt((iter->Dat)[j]);
+          FOut.PutCh(' ');
+        }
+        
+        for (int j = 0; j < EmbeddingsHVSuperNet.GetDat(i).Len(); j++) {
+          FOut.PutFlt(EmbeddingsHVSuperNet.GetDat(i)[j]);
+          FOut.PutCh(' ');
+        }
+        
+        FOut.PutLn();
+    }
+    end = std::clock();
+    elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    StatsStream << elapsed_secs << "\t";
+  }
+}
 
 
 

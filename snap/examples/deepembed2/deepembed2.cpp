@@ -107,46 +107,8 @@ int main(int argc, char* argv[]) {
   StatsStream.open(StatsFile.CStr());
   StatsStream << elapsed_secs << "\n";
 
-  //Super-graph node2vec
-  begin = std::clock();
-  TIntFltVH EmbeddingsHVSuperNet;
-  node2vec(SuperNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
-    EmbeddingsHVSuperNet);
-  end = std::clock();
-  elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-  StatsStream << elapsed_secs << "\n";
-
-  //Small-graph node2vec
-  printf("Start learning for small net");
-  TFOut FOut(OutFile);
-  FOut.PutCh(' ');
-  FOut.PutLn();
-  for (int i = 0; i < NetVector.Len(); i++) {
-    begin = std::clock();
-    printf("This for the %d cluster\n", i);
-    TIntFltVH EmbeddingsHVSmallNet;
-    PWNet CurrSmallNet = NetVector[i];
-    node2vec(CurrSmallNet, ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
-    EmbeddingsHVSmallNet);
-    for (TIntFltVH::TIter iter = EmbeddingsHVSmallNet.BegI(); iter < EmbeddingsHVSmallNet.EndI(); iter++) {
-        FOut.PutInt(iter->Key);
-        FOut.PutCh(' ');
-        for (int j = 0; j < (iter->Dat).Len(); j++) {
-          FOut.PutFlt((iter->Dat)[j]);
-          FOut.PutCh(' ');
-        }
-        
-        for (int j = 0; j < EmbeddingsHVSuperNet.GetDat(i).Len(); j++) {
-          FOut.PutFlt(EmbeddingsHVSuperNet.GetDat(i)[j]);
-          FOut.PutCh(' ');
-        }
-        
-        FOut.PutLn();
-    }
-    end = std::clock();
-    elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    StatsStream << elapsed_secs << "\t";
-  }
+  LearnAndWriteOutputEmbeddingForAll(OutFile, StatsStream, SuperNet, NetVector, ParamP, ParamQ, Dimensions, 
+    WalkLen, NumWalks, WinSize, Iter, Verbose);
   
   // std::cout<<NewGraphFolder<<std::endl;
   
