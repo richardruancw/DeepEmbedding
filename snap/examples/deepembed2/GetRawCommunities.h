@@ -22,5 +22,8 @@ int GrowCommunityByBFS(PUNGraph InNet, std::vector<std::vector<int> >& C2N,
 void GetRawCommunities(PWNet InNet, std::vector<std::vector<int> >& C2N,
 	THash<TInt, TInt>& N2C, double UpdateRateThreshold, int NumCommunities);
 
+void GetRawCommunitiesByRandom(PWNet InNet, std::vector<std::vector<int> >& C2N,
+	THash<TInt, TInt>& N2C, double UpdateRateThreshold, int NumCommunities);
+
 
 #endif //GETRAWCOMMYNITIES_H

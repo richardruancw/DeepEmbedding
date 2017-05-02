@@ -13,7 +13,7 @@
 void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& StatsFile, TStr& GraphFolder,
  int& Dimensions, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, int& Option,
  bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted, 
- int & CommunityDetectionOption, double & MergeThreshold) {
+ int & CommunityDetectionOption, double & MergeThreshold, bool& Smart) {
 
 
   Env = TEnv(argc, argv, TNotify::StdNotify);
@@ -57,9 +57,12 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& Stats
   MergeThreshold = Env.GetIfArgPrefixFlt("-mt:", 0.4, 
     "Quantile of cluster sizes under which the cluster should be merged by community detection method. Default is 0.4");
 
+
   Verbose = Env.IsArgStr("-v", "Verbose output.");
   Directed = Env.IsArgStr("-dr", "Graph is directed.");
-  Weighted = Env.IsArgStr("-w", "Graph is weighted.");}
+  Weighted = Env.IsArgStr("-w", "Graph is weighted.");
+  Smart = Env.IsArgStr("-ss", "Get raw community starting from lowest degree instead of random");
+}
 
 void ReadGraph(TStr& InFile, bool& Directed, bool& Weighted, bool& Verbose, PWNet& InNet) {
   TFIn FIn(InFile);

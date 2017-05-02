@@ -27,14 +27,15 @@ int main(int argc, char* argv[]) {
   TStr InFile,OutFile, StatsFile;
   int Dimensions, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Option, CommunityDetectionOption;
   double ParamP, ParamQ, MergeThreshold;
-  bool Directed, Weighted, Verbose;
+  bool Directed, Weighted, Verbose, Smart;
 
   double UpdateRateThreshold;
   int NumCommunities;
   TStr GraphFolder;
 
   ParseArgs(argc, argv, InFile, OutFile, StatsFile, GraphFolder, Dimensions, SuperDimensions, WalkLen, NumWalks, WinSize,
-   Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted, CommunityDetectionOption, MergeThreshold);
+   Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted, CommunityDetectionOption, 
+   MergeThreshold, Smart);
 
 
   //need a std::string as function for write to disk
@@ -74,7 +75,13 @@ int main(int argc, char* argv[]) {
   std::vector<std::vector<int> > C2N;
   THash<TInt, TInt> N2C;
 
-  GetRawCommunities(InNet, C2N, N2C, UpdateRateThreshold, NumCommunities);
+  if(Smart){
+    printf("Use Smart!!!!!!!!!!!!!!!!!!!\n");
+    GetRawCommunities(InNet, C2N, N2C, UpdateRateThreshold, NumCommunities);
+  }else{
+    printf("Use Random!!!!!!!!!!!!!!!!!!!\n");
+    GetRawCommunitiesByRandom(InNet, C2N, N2C, UpdateRateThreshold, NumCommunities);
+  }
   printf("Get %d raw communities.\n", C2N.size());
 
 

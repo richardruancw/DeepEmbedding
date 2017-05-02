@@ -28,6 +28,8 @@ CHOICE_WEIGHTED=""
 CHOICE_DIRECTED=""
 # If verbose ="-v"
 CHOICE_VERBOSE="-v"
+# If get raw communities from lowest degree node instead of random
+CHOICE_SMART="-ss"
 
 
 GRAPH_FULL_PATH=graph/
@@ -55,7 +57,7 @@ do
         GRAPH_TRAIN="$GRAPH_PREFIX$i"
         # run our node2vec on this training graph
         EMBEDDING_TRAIN="$EMBEDDING_PREFIX$i$TXT"
-        ./deepembed2 -i:graph/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/$EMBEDDING_TRAIN -stats:./stats/stats.txt -l:$NUM_WALKLEN -d:$NUM_DIM -p:$NUM_P_n2v  -q:$NUM_Q_n2v $CHOICE_VERBOSE -nc:$NUM_COM -ut:$NUM_UPDATE_RATE $CHOICE_DIRECTED $CHOICE_WEIGHTED -ours:1 -mt:$MERGE_THRESHOLD -cdo:$COMMUNITY_DETECTION_OPTION -sd:$NUM_SUPER_DIM
+        ./deepembed2 -i:graph/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/$EMBEDDING_TRAIN -stats:./stats/stats.txt -l:$NUM_WALKLEN -d:$NUM_DIM -p:$NUM_P_n2v  -q:$NUM_Q_n2v $CHOICE_VERBOSE -nc:$NUM_COM -ut:$NUM_UPDATE_RATE $CHOICE_DIRECTED $CHOICE_WEIGHTED -ours:1 -mt:$MERGE_THRESHOLD -cdo:$COMMUNITY_DETECTION_OPTION -sd:$NUM_SUPER_DIM $CHOICE_SMART
         ./deepembed2 -i:graph/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/$EMBEDDING_TRAIN -stats:./stats/stats.txt -l:$NUM_WALKLEN -d:$NUM_DIM -p:$NUM_P_n2v  -q:$NUM_Q_n2v $CHOICE_VERBOSE -nc:$NUM_COM -ut:$NUM_UPDATE_RATE $CHOICE_DIRECTED $CHOICE_WEIGHTED -ours:0
         python get_time_cpp.py
         echo "This is our method"

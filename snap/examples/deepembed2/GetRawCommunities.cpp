@@ -73,7 +73,7 @@ int GrowCommunityByBFS(PUNGraph InNet, std::vector< std::vector<int> >& C2N,
 
 void GetRawCommunities(PWNet InNet, std::vector<std::vector<int> >& C2N,
 	THash<TInt, TInt>& N2C, double UpdateRateThreshold, int NumCommunities){
-	
+
 	PUNGraph Net = TSnap::ConvertGraph<PUNGraph, PWNet>(InNet);
 	int AllNodes = Net->GetNodes();
 	int Settled = 0;
@@ -102,3 +102,27 @@ void GetRawCommunities(PWNet InNet, std::vector<std::vector<int> >& C2N,
 		// printf("Finish Deleting Settled Nodes\n");
 	}
 }
+
+void GetRawCommunitiesByRandom(PWNet InNet, std::vector<std::vector<int> >& C2N,
+	THash<TInt, TInt>& N2C, double UpdateRateThreshold, int NumCommunities){
+	
+	PUNGraph Net = TSnap::ConvertGraph<PUNGraph, PWNet>(InNet);
+	int AllNodes = Net->GetNodes();
+	int Settled = 0;
+	int CommunityID = 0;
+	int CommunitySize = AllNodes / NumCommunities;
+	while(Settled < AllNodes){
+		int RndId = Net->GetRndNId();	
+		TIntV Merged;
+		Settled += GrowCommunityByBFS(Net, C2N, N2C, Merged,
+					RndId, CommunityID, 
+					UpdateRateThreshold, CommunitySize);
+		CommunityID++;
+		// printf("Begin Deleting Settled Nodes\n");
+		for(int j = 0; j < Merged.Len(); j++){//Deleted those already settled
+			Net->DelNode(Merged[j]);
+		}
+		// printf("Finish Deleting Settled Nodes\n");
+	}
+}
+
