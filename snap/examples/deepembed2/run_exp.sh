@@ -47,9 +47,7 @@ then
 	python split.py $NUM_PARTITION $GRAPH_FULL_PATH
 fi
 
-cd stats
-rm *
-cd ..
+rm stats/*
 
 let "COUNT=$NUM_PARTITION - 1"
 for i in `seq 0 $COUNT`;
