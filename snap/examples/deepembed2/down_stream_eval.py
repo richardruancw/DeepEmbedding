@@ -1,6 +1,7 @@
 import numpy as np
 import os, sys, logging
 from sklearn.linear_model import SGDClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix, f1_score
 
 """
@@ -25,7 +26,6 @@ def load_train_test(eval_path, embedding_path, ours, d, sd, option):
 	batch_size_test = test.shape[0]
 	if ours == 1:
 		embeddings = np.loadtxt(os.path.join(embedding_path,"outemb"+game_round+".txt"), skiprows = 1)
-		 # embeddings = np.loadtxt(os.path.join(embedding_path,"outemb_lonely0.txt"), skiprows = 1)
 	else:
 		embeddings = np.loadtxt(os.path.join(embedding_path,"Origin"), skiprows = 1)
 
@@ -57,6 +57,7 @@ def giveBatchIndices(batchSize, nRows):
     np.random.shuffle(indices)
     ret = []
     start = 0
+    batchSize = nRows
     while start < nRows:
         ret.append(indices[start:(start+batchSize)])
         start += batchSize
@@ -101,9 +102,24 @@ def get_batch_features(train_x, train_y, test_x, test_y, embedding_map, batch_in
 
 	return train_features, train_labels, test_features, test_labels
 
+# def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test, confusion_mat = False):
+# 	train_features, train_labels,test_features, test_labels = get_batch_features(train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test)
+# 	model.partial_fit(train_features, train_labels, [0,1])
+
+# 	predictions = model.predict(test_features)
+
+# 	if confusion_mat:
+# 		print confusion_matrix(test_labels, predictions, labels = [0,1])
+
+# 	accuracy = model.score(test_features, test_labels)
+# 	f1 = f1_score(test_labels,predictions)
+
+# 	return accuracy, f1
+
 def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test, confusion_mat = False):
 	train_features, train_labels,test_features, test_labels = get_batch_features(train_x, train_y, test_x, test_y, embedding_map, batch_indices_train, batch_indices_test)
-	model.partial_fit(train_features, train_labels, [0,1])
+	# model.partial_fit(train_features, train_labels, [0,1])
+	model.fit(train_features, train_labels)
 
 	predictions = model.predict(test_features)
 
@@ -115,14 +131,18 @@ def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_m
 
 	return accuracy, f1
 
+
 def train_and_test(eval_path, embedding_path, ours, d, sd, decomp):
 	logger.info("Loading train test data and embeddings")
 	train_x, train_y, test_x, test_y, embedding_map, batch_size_test = load_train_test(eval_path, embedding_path,ours, d, sd, decomp)
-	model = SGDClassifier()
+	# model = SGDClassifier()
+	model = MLPClassifier(hidden_layer_sizes = (100, ))
 
 	indices_bag_train = giveBatchIndices(batch_size, train_x.shape[0])
 	indices_bag_test = giveBatchIndices(test_x.shape[0], test_x.shape[0])
 	logger.info("Start training and testing")
+	
+	print "number of training batches",len(indices_bag_train)
 	
 	for i in xrange(len(indices_bag_train)):
 		for j in xrange(len(indices_bag_test)):
