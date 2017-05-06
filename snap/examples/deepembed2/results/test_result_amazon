@@ -1,0 +1,13 @@
+Our methods: 
+s 
+acc: 0.611579397518 acc std: 0.0233308634517 f1 mean: 0.596696785717 f1 std: 0.0665803891141
+n+s 
+acc: 0.864052951279 acc std: 0.00169402617564 f1 mean: 0.850910427105 f1 std: 0.00294709021677
+n 
+acc: 0.82234129434 acc std: 0.0019115048235 f1 mean: 0.789132132437 f1 std: 0.00365762613049
+Origin node2vec
+acc: 0.940482494994 acc std: 0.00161812146018 f1 mean: 0.936631981182 f1 std: 0.00184335890273
+Our methods, time cost:
+parition mean time: 13.29777 partition time std: 1.11142538485 super net mean time: 0.3153991 super net time std: 0.0228589573141 small net sum mean: 512.598326 small net sum std: 24.5229938483 small net mean mean: 3.93159910774 small net mean std: 0.188700019612
+The origin method, time cost
+origin mean time: 1413.372 origin time std: 64.185516092
