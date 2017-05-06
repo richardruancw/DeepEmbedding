@@ -118,11 +118,11 @@ int main(int argc, char* argv[]) {
   //     printf("node degree is : %d \n", NI.GetDeg());
   //   }
   
-  std::nth_element(SizeVec.begin(), SizeVec.begin()+(int)(SizeVec.size()*MergeThreshold), SizeVec.end());
+  // std::nth_element(SizeVec.begin(), SizeVec.begin()+(int)(SizeVec.size()*MergeThreshold), SizeVec.end());
 
-  int threshold = SizeVec[(int)(SizeVec.size()*MergeThreshold)];
-  printf("merge threshold is %d\n", threshold);
-  MergeSmallSuperNodes(InNet,NewC2N, N2C,NetVector,SuperNet,threshold,CommunityDetectionOption);
+  // int threshold = SizeVec[(int)(SizeVec.size()*MergeThreshold)];
+  // printf("merge threshold is %d\n", threshold);
+  // MergeSmallSuperNodes(InNet,NewC2N, N2C,NetVector,SuperNet,threshold,CommunityDetectionOption);
 
   // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
 
