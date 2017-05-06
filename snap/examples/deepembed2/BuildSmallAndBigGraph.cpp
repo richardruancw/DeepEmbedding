@@ -227,6 +227,29 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 	}
 }
 
+// bool EdgeComparator(TWNet::TEdgeI & e1, TWNet::TEdgeI & e2){
+// 	return (e1.GetDat() > e2.GetDat()); 
+// }
+
+// void ConductanceMerge(PWNet & SuperNet, TCnComV & CmtyV){
+// 	std::vector<TWNet::TEdgeI> EdgeVec;
+
+// 	for(TWNet::TEdgeI EI = SuperNet->BegEI(); EI < SuperNet->EndI(); EI++){
+// 		EdgeVec.push_back(EI);
+// 	}
+// 	std::sort(EdgeVec.begin(), EdgeVec.end(), EdgeComparator);
+
+// 	THash<int, int> assigner;
+
+// 	for(int i = 0; i < EdgeVec.size(); i++){
+// 		int node1 = EdgeVec[i].GetSrcNId();
+// 		int node2 = EdgeVec[i].GetDstNId();
+
+// 		if(node1)
+// 	}
+
+// }
+
 void communityDetect(int & option, TCnComV & CmtyV, PUNGraph & Graph, double & Q){
 	if(option == 1){
 		printf("use algo 1: Girvan-Newman !\n");
@@ -268,6 +291,7 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 
 	PUNGraph SuperGraph = PUNGraph::New();
 	SuperGraph = TSnap::ConvertGraph<PUNGraph, PWNet> (SuperNet);
+	
 	communityDetect(option, CmtyV, SuperGraph, Q);
 	//update N2C, C2N, inEdgeCounts outEdgeMaps
 	for (int c = 0; c < CmtyV.Len(); c++) {
@@ -288,6 +312,7 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 	    NewC2N.push_back(TempVec);
 	    counter++;
   	}
+
 	//reconstruct small graphs
 	SuperNet->Clr();
 	bool BuildSmallGraphNow = true;
