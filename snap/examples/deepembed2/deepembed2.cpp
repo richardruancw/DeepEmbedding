@@ -104,14 +104,19 @@ int main(int argc, char* argv[]) {
 
   PWNet SuperNet = PWNet::New();
   TVec<PWNet> NetVector;
-  // bool BuildSmallGraphNow = true;
-  // BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet, BuildSmallGraphNow);
-  bool BuildSmallGraphNow = false;
-  std::vector<int> SizeVec;
-  for(int i = 0; i < NewC2N.size(); i++){
-    SizeVec.push_back(NewC2N[i].size());
-  }
+  bool BuildSmallGraphNow = true;
   BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet, BuildSmallGraphNow);
+  // bool BuildSmallGraphNow = false;
+  // std::vector<int> SizeVec;
+  // for(int i = 0; i < NewC2N.size(); i++){
+  //   SizeVec.push_back(NewC2N[i].size());
+  // }
+  // BuildSmallAndBigGraphToMemory(InNet, NewC2N, N2C, NetVector, SuperNet, BuildSmallGraphNow);
+  
+  // printf("there are %d nodes \n", SuperNet->GetNodes());
+  //   for(TWNet::TNodeI NI = SuperNet->BegNI(); NI < SuperNet -> EndNI(); NI++){
+  //     printf("node degree is : %d \n", NI.GetDeg());
+  //   }
   
   std::nth_element(SizeVec.begin(), SizeVec.begin()+(int)(SizeVec.size()*MergeThreshold), SizeVec.end());
 
