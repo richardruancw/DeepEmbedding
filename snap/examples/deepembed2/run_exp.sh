@@ -7,7 +7,8 @@ GRAPH_NAME=facebook_combined.edgelist
 RESULT_NAME=test_result
 
 NUM_PARTITION=2
-NUM_DIM=24
+NUM_DIM=48
+NUM_SMALL_DIM=24
 NUM_SUPER_DIM=24
 
 NUM_Q_n2v=0.5
@@ -44,6 +45,8 @@ TXT=".txt"
 
 if [ $DO_PARTITION -eq 1 ]
 then
+        rm embeddings/*
+        rm eval/*
 	python split.py $NUM_PARTITION $GRAPH_FULL_PATH
 fi
 
@@ -55,11 +58,11 @@ do
         GRAPH_TRAIN="$GRAPH_PREFIX$i"
         # run our node2vec on this training graph
         EMBEDDING_TRAIN="$EMBEDDING_PREFIX$i$TXT"
-        ./deepembed2 -i:graph/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/$EMBEDDING_TRAIN -stats:./stats/stats.txt -l:$NUM_WALKLEN -d:$NUM_DIM -p:$NUM_P_n2v  -q:$NUM_Q_n2v $CHOICE_VERBOSE -nc:$NUM_COM -ut:$NUM_UPDATE_RATE $CHOICE_DIRECTED $CHOICE_WEIGHTED -ours:1 -mt:$MERGE_THRESHOLD -cdo:$COMMUNITY_DETECTION_OPTION -sd:$NUM_SUPER_DIM $CHOICE_SMART
+        ./deepembed2 -i:graph/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/$EMBEDDING_TRAIN -stats:./stats/stats.txt -l:$NUM_WALKLEN -d:$NUM_SMALL_DIM -p:$NUM_P_n2v  -q:$NUM_Q_n2v $CHOICE_VERBOSE -nc:$NUM_COM -ut:$NUM_UPDATE_RATE $CHOICE_DIRECTED $CHOICE_WEIGHTED -ours:1 -mt:$MERGE_THRESHOLD -cdo:$COMMUNITY_DETECTION_OPTION -sd:$NUM_SUPER_DIM $CHOICE_SMART
         ./deepembed2 -i:graph/$GRAPH_TRAIN -out:graphs_folder -o:./embeddings/$EMBEDDING_TRAIN -stats:./stats/stats.txt -l:$NUM_WALKLEN -d:$NUM_DIM -p:$NUM_P_n2v  -q:$NUM_Q_n2v $CHOICE_VERBOSE -nc:$NUM_COM -ut:$NUM_UPDATE_RATE $CHOICE_DIRECTED $CHOICE_WEIGHTED -ours:0
         python get_time_cpp.py
         echo "This is our method"
-        python down_stream_eval.py -b:$NUM_BATCH_SIZE -d:$NUM_DIM -r:$i -ours:1 -decomp:$CHOICE_EMBED_DECOMPOSE -sd:$NUM_SUPER_DIM
+        python down_stream_eval.py -b:$NUM_BATCH_SIZE -d:$NUM_SMALL_DIM -r:$i -ours:1 -decomp:$CHOICE_EMBED_DECOMPOSE -sd:$NUM_SUPER_DIM
         echo "The following is original node2vec" 
         python down_stream_eval.py -b:$NUM_BATCH_SIZE -d:$NUM_DIM -r:$i -ours:0 -decomp:0 -sd:$NUM_SUPER_DIM
 done
