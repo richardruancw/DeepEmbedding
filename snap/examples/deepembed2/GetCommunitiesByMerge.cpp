@@ -26,7 +26,7 @@ void GetTopGroup(std::vector<int>& TopGroup, const std::vector<std::vector<int> 
 	}
 }
 
-bool InputIsValid(std::vector<std::vector<int> >& C2N, THash<TInt, TInt>& N2C) {
+bool InputIsValid(const std::vector<std::vector<int> >& C2N, THash<TInt, TInt>& N2C) {
 	for (int i = 0; i < C2N.size(); i++) {
 		for (int j = 0; j < C2N[i].size(); j++) {
 			if (N2C.GetDat(C2N[i][j]) != i) {
@@ -166,7 +166,7 @@ void ResolveConflictsByRandomAssign(std::vector<std::vector<int> >& NewC2N, std:
 }
 
 
-void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C2N, std::vector<std::vector<int> >& NewC2N,
+void GetCommunitiesByMerge(const PWNet& InNet, const std::vector<std::vector<int> >& C2N, std::vector<std::vector<int> >& NewC2N,
 					 THash<TInt, TInt>& N2C, int& NumCommunities) {
 
 	IAssert(TSnap::IsWeaklyConn<PWNet>(InNet));

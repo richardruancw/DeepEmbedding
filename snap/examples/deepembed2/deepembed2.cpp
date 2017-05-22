@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
   TStr InFile,OutFile, StatsFile;
   int Dimensions, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Option, CommunityDetectionOption;
   double ParamP, ParamQ, MergeThreshold;
-  bool Directed, Weighted, Verbose, Smart;
+  bool Directed, Weighted, Verbose, Smart, Debug;
 
   double UpdateRateThreshold;
   int NumCommunities;
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 
   ParseArgs(argc, argv, InFile, OutFile, StatsFile, GraphFolder, Dimensions, SuperDimensions, WalkLen, NumWalks, WinSize,
    Iter, NumCommunities, Option, Verbose, ParamP, ParamQ, UpdateRateThreshold, Directed, Weighted, CommunityDetectionOption, 
-   MergeThreshold, Smart);
+   MergeThreshold, Smart, Debug);
 
 
   //need a std::string as function for write to disk
@@ -95,12 +95,17 @@ int main(int argc, char* argv[]) {
   printf("Num of Nodes in MxScc: %d\n", InNet->GetNodes());
 
   std::vector<std::vector<int> > NewC2N;
+
   // Update C2N and N2C, such that number of communities == NumCommunities.
   GetCommunitiesByMerge(InNet, C2N, NewC2N, N2C, NumCommunities);
 
   printf("Number of communities in Original %d\n", C2N.size());
   printf("Number of communities in New %d\n", NewC2N.size());
 
+  // Output community size before merge
+  OutputNodeDistribution("./stats/size_distribution_before.txt", "Before Merge", C2N);
+  // Output community size after merge
+  OutputNodeDistribution("./stats/size_distribution_after.txt", "After Merge", NewC2N);
 
   PWNet SuperNet = PWNet::New();
   TVec<PWNet> NetVector;

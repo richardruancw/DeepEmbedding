@@ -1,13 +1,14 @@
 #ifndef DEEPUTILIS_H
 #define DEEPUTILIS_H
 
+typedef std::vector<std::vector<int> > DeepVVInt;
 
 /* Parse the input from command line
  */
 void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& StatsFile, TStr& GraphFolder,
  int& Dimensions, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, int& Option,
  bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted, 
- int & CommunityDetectionOption, double & MergeThreshold, bool& Smart);
+ int & CommunityDetectionOption, double & MergeThreshold, bool& Smart, bool& Debug);
 
 
 
@@ -46,5 +47,7 @@ void SelectRepresentativeNodes(PWNet& InNet, THashSet<TInt>& RepresentativeNodes
 
 void LearnAndWriteOutputEmbeddingForAll(TStr& OutFile, std::ofstream& StatsStream, PWNet& SuperNet, TVec<PWNet>& NetVector,
   double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose);
+
+void OutputNodeDistribution(std::string OutFile, std::string Comment, std::vector<std::vector<int> >& N2C);
 
 #endif //DEEPUTILIS_H

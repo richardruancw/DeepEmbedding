@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "n2v.h"
+#include "deeputils.h"
 
 #include <ctime>
 #include <fstream>
@@ -13,7 +14,7 @@
 void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& StatsFile, TStr& GraphFolder,
  int& Dimensions, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, int& NumCommunities, int& Option,
  bool& Verbose, double& ParamP, double& ParamQ, double& UpdateRateThreshold, bool& Directed, bool& Weighted, 
- int & CommunityDetectionOption, double & MergeThreshold, bool& Smart) {
+ int & CommunityDetectionOption, double & MergeThreshold, bool& Smart, bool& Debug) {
 
 
   Env = TEnv(argc, argv, TNotify::StdNotify);
@@ -62,6 +63,7 @@ void ParseArgs(int& argc, char* argv[], TStr& InFile, TStr& OutFile, TStr& Stats
   Directed = Env.IsArgStr("-dr", "Graph is directed.");
   Weighted = Env.IsArgStr("-w", "Graph is weighted.");
   Smart = Env.IsArgStr("-ss", "Get raw community starting from lowest degree instead of random");
+  Debug = Env.IsArgStr("-debug", "In Debug Mode");
 }
 
 void ReadGraph(TStr& InFile, bool& Directed, bool& Weighted, bool& Verbose, PWNet& InNet) {
@@ -234,6 +236,17 @@ void LearnAndWriteOutputEmbeddingForAll(TStr& OutFile, std::ofstream& StatsStrea
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     StatsStream << elapsed_secs << "\t";
   }
+}
+
+void OutputNodeDistribution(std::string OutFile, std::string Comment, std::vector<std::vector<int> >& N2C) {
+  std::ofstream StatsStream;
+  StatsStream.open(OutFile.c_str());
+  StatsStream << "---Output Size of Each Communities---";
+  StatsStream << "---" << Comment << "---" << std::endl;
+  for (int i = 0; i < N2C.size(); i++) {
+ 		StatsStream << N2C[i].size() << " ";
+  }
+  StatsStream << std::endl;
 }
 
 

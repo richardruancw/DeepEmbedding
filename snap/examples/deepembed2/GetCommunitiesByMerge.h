@@ -11,7 +11,7 @@
  * @post InNet.size() <= NumCommunities && # Unique communities id in N2C <= NumCommunities
  *       Unique communities id in N2C == InNet.size();
  */
-void GetCommunitiesByMerge(const PWNet& InNet, std::vector<std::vector<int> >& C2N, std::vector<std::vector<int> >& NewC2N,
+void GetCommunitiesByMerge(const PWNet& InNet, const std::vector<std::vector<int> >& C2N, std::vector<std::vector<int> >& NewC2N,
 					 THash<TInt, TInt>& N2C, int& NumCommunities);
 
 #endif //GETCOMMUNITIESBYMERGE_H
