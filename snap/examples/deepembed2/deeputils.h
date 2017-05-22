@@ -1,6 +1,8 @@
 #ifndef DEEPUTILIS_H
 #define DEEPUTILIS_H
 
+#include <vector>
+#include <string>
 
 /* Parse the input from command line
  */
