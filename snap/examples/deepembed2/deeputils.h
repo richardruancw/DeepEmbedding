@@ -1,7 +1,6 @@
 #ifndef DEEPUTILIS_H
 #define DEEPUTILIS_H
 
-typedef std::vector<std::vector<int> > DeepVVInt;
 
 /* Parse the input from command line
  */
