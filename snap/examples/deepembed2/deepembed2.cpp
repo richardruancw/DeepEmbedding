@@ -132,6 +132,7 @@ int main(int argc, char* argv[]) {
   // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
 
   //End of partition, timing
+  InNet.Clr();
   std::clock_t end = std::clock();
   double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
   std::ofstream StatsStream;
