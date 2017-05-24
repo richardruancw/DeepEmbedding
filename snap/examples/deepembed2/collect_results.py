@@ -51,6 +51,42 @@ def ReadTimeCost(output_stats_path):
 			origin.append(res[4])
 	return np.mean(parition), np.std(parition), np.mean(super_net), np.std(super_net), np.mean(small_net_sum), np.std(small_net_sum), np.mean(small_net_mean), np.std(small_net_mean), np.mean(origin), np.std(origin)
 
+def collect_result(file_name):
+	# generate_fake_data(data_path)
+	eval_path = "eval/"
+	embedding_path = "embeddings/"
+	output_stats_path = "stats/"
+
+	partition_time_mean, partition_time_std, super_net_time_mean, super_net_time_std, small_net_sum_mean, small_net_sum_std, small_net_mean_mean, small_net_mean_std, origin_mean, origin_std = ReadTimeCost(output_stats_path)
+
+	with open(os.path.join(output_stats_path, file_name), "w") as f:
+		acc_mean_out, acc_std_out, f1_mean_out, f1_std_out = ReadEvaluation(output_stats_path, "")
+		f.write("Our methods: \n")
+		for k in acc_mean_out.keys():
+			f.write(" ".join([k, "\n"]))
+			acc_mean, acc_std = acc_mean_out[k], acc_std_out[k]
+			f1_mean, f1_std = f1_mean_out[k], f1_std_out[k]
+			f.write(" ".join(["acc:", str(acc_mean), "acc std:", str(acc_std), "f1 mean:", str(f1_mean), "f1 std:", str(f1_std)]))
+			f.write("\n")
+		
+		acc_mean_out, acc_std_out, f1_mean_out, f1_std_out = ReadEvaluation(output_stats_path, "_origin")
+		f.write("Origin node2vec\n")
+		for k in acc_mean_out.keys():
+			acc_mean, acc_std = acc_mean_out[k], acc_std_out[k]
+			f1_mean, f1_std = f1_mean_out[k], f1_std_out[k]
+			f.write(" ".join(["acc:", str(acc_mean), "acc std:", str(acc_std), "f1 mean:", str(f1_mean), "f1 std:", str(f1_std)]))
+			f.write("\n")
+
+		f.write("Our methods, time cost:\n")
+		f.write(" ".join(["parition mean time:", str(partition_time_mean), "partition time std:", str(partition_time_std), "super net mean time:", str(super_net_time_mean),
+			"super net time std:", str(super_net_time_std), "small net sum mean:", str(small_net_sum_mean), "small net sum std:", str(small_net_sum_std), "small net mean mean:", str(small_net_mean_mean),
+			"small net mean std:", str(small_net_mean_std)]))
+		f.write("\n")
+		f.write("The origin method, time cost\n")
+		f.write(" ".join(["origin mean time:", str(origin_mean), "origin time std:", str(origin_std)]))
+		f.write("\n")
+
+
 if __name__ == "__main__":
 	# generate_fake_data(data_path)
 	eval_path = "eval/"

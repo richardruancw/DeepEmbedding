@@ -101,6 +101,20 @@ def writeTrainTestFile(k, posRemovable, posNonRemovable, negLinks):
 		test.close()
 		node2vec.close()
 	print "done!"
+
+def split_graph(k, input_graph):
+	G, weightMap = constructNet(input_graph, " ")
+	numPos = G.GetEdges()
+	numNeg = 0
+	seen = {}
+	negLinks = []
+	posRemovable = []
+	posNonRemovable = []
+	negLinks = generateNeg(G,negLinks,seen,numNeg,numPos)
+	del(seen)
+	posRemovable, posNonRemovable = generatePos(G, posRemovable, posNonRemovable, weightMap)
+	writeTrainTestFile(k, posRemovable, posNonRemovable, negLinks)
+
 	
 if __name__ == "__main__":
 	args = sys.argv
