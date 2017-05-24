@@ -132,10 +132,10 @@ def train_and_test_on_batch(model, train_x, train_y, test_x, test_y, embedding_m
 	return accuracy, f1
 
 
-def train_and_test(eval_path, embedding_path, ours, d, sd, decomp, logger, game_round, batch_size):
+def train_and_test(eval_path, embedding_path, ours, d, sd, option, logger, game_round, batch_size):
 	logger.info("Loading train test data and embeddings")
 	train_x, train_y, test_x, test_y, embedding_map, batch_size_test = load_train_test(eval_path, 
-			embedding_path,ours, d, sd, decomp, game_round)
+			embedding_path,ours, d, sd, option, game_round)
 
 	# model = SGDClassifier()
 	model = MLPClassifier(hidden_layer_sizes = (100, 100), verbose = True)
