@@ -227,28 +227,99 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 	}
 }
 
-// bool EdgeComparator(TWNet::TEdgeI & e1, TWNet::TEdgeI & e2){
-// 	return (e1.GetDat() > e2.GetDat()); 
-// }
+bool EdgeComparator(TWNet::TEdgeI & e1, TWNet::TEdgeI & e2){
+	return (e1.GetDat() > e2.GetDat()); 
+}
 
-// void ConductanceMerge(PWNet & SuperNet, TCnComV & CmtyV){
-// 	std::vector<TWNet::TEdgeI> EdgeVec;
+bool CheckAdd(TCnCom & com, int & alreadyIn, int & wantCheck, PWNet & SuperNet, bool & shouldAdd){
+	for(int j = 0; j < com.Len(); j++){
+		if(! SuperNet->IsEdge(wantCheck, com[j]) || 
+			SuperNet->GetEDat(wantCheck, com[j]) < 0.5*(SuperNet->GetEDat(wantCheck, alreadyIn))){
+			shouldAdd = false;
+			break;
+		}
+	}
+}
 
-// 	for(TWNet::TEdgeI EI = SuperNet->BegEI(); EI < SuperNet->EndI(); EI++){
-// 		EdgeVec.push_back(EI);
-// 	}
-// 	std::sort(EdgeVec.begin(), EdgeVec.end(), EdgeComparator);
+void ConductanceMerge(PWNet & SuperNet, TCnComV & CmtyV, double & percent, int & maxRound){
+	printf("use algo 4: ConductanceMerge !\n");
+	std::vector<TWNet::TEdgeI> EdgeVec;
+	double value = 0;
+	printf("edge weights: \n");
+	for(TWNet::TEdgeI EI = SuperNet->BegEI(); EI < SuperNet->EndEI(); EI++){
+		EdgeVec.push_back(EI);
+		printf("%f,",(double) SuperNet->GetEDat(EI.GetSrcNId(),EI.GetDstNId()));
+		if(SuperNet->GetEDat(EI.GetSrcNId(),EI.GetDstNId()) > value){
+			value = SuperNet->GetEDat(EI.GetSrcNId(),EI.GetDstNId());
+		}
+	}
+	//map original community id to new community id
+	THash<TInt, TInt> assigner;
+	//map new community id to the connected component
+	THash<TInt, TCnCom> organizer;
+	int community = 0;
+	//loop all the edges
+	for(int i = 0; i < EdgeVec.size(); i++){
+		int node1 = EdgeVec[i].GetSrcNId();
+		int node2 = EdgeVec[i].GetDstNId();
+		// if the conductance on current edge is large enough
+		if(SuperNet->GetEDat(node1, node2) > (percent * value)){
+			//if we did not encounter these two super nodes before
+			if(!assigner.IsKey(node1) && !assigner.IsKey(node2)){
+				// map two original communities to new community
+				assigner.AddDat(node1, community);
+				assigner.AddDat(node2, community);
+				assert(organizer.IsKey(community) != true);
+				//construct new connected component and add the original two super nodes to the new connnected component
+				TCnCom com;
+				com.Add(node1);
+				com.Add(node2);
+				// map new community id to the connected component
+				organizer(community) = com;
+				community++;
+			}//if we saw node1 before but not node2
+			else if(assigner.IsKey(node1) && !assigner.IsKey(node2)){
+				bool shouldAdd = true;
+				// get the connected component that contains node1
+				TCnCom com = organizer(assigner(node1));
+				//check if we should add super node2 to the connected component
+				CheckAdd(com, node1, node2, SuperNet, shouldAdd);
+				if(shouldAdd){
+					assigner.AddDat(node2, assigner(node1));
+					organizer(assigner(node1)).Add(node2);
+				}
 
-// 	THash<int, int> assigner;
-
-// 	for(int i = 0; i < EdgeVec.size(); i++){
-// 		int node1 = EdgeVec[i].GetSrcNId();
-// 		int node2 = EdgeVec[i].GetDstNId();
-
-// 		if(node1)
-// 	}
-
-// }
+			}//if we saw node2 before but not node1
+			else if(assigner.IsKey(node2) && !assigner.IsKey(node1)){
+				bool shouldAdd = true;
+				// get the connected component that contains node2
+				TCnCom com = organizer(assigner(node2));
+				//check if we should add super node1 to the connected component
+				CheckAdd(com, node2, node1, SuperNet, shouldAdd);
+				if(shouldAdd){
+					assigner.AddDat(node1, assigner(node2));
+					organizer(assigner(node2)).Add(node1);
+				}
+			}
+		}
+	}
+	//put the newly formed connected component into CmtyV
+	for(THash<TInt, TCnCom>::TIter HashI = organizer.BegI(); HashI < organizer.EndI(); HashI++){
+		TCnCom com = (*HashI).Dat;
+		CmtyV.Add(com);
+	}
+	//put other super nodes that have not been assigned to the CmtyV
+	for(TWNet::TNodeI NI = SuperNet->BegNI(); NI < SuperNet->EndNI(); NI++){
+		int id = NI.GetId();
+		if(!assigner.IsKey(id)){
+			TCnCom com;
+			com.Add(id);
+			CmtyV.Add(com);
+		}
+	}
+	printf("original number of communities: %d\n", SuperNet->GetNodes());
+	printf("number of communities: %d\n", CmtyV.Len());
+}
 
 void communityDetect(int & option, TCnComV & CmtyV, PUNGraph & Graph, double & Q){
 	if(option == 1){
@@ -291,8 +362,13 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 
 	PUNGraph SuperGraph = PUNGraph::New();
 	SuperGraph = TSnap::ConvertGraph<PUNGraph, PWNet> (SuperNet);
-	
-	communityDetect(option, CmtyV, SuperGraph, Q);
+	if(option == 4){
+		int maxRound = 5;
+		double percent = 0.5;
+		ConductanceMerge(SuperNet, CmtyV, percent, maxRound);
+	}else{
+		communityDetect(option, CmtyV, SuperGraph, Q);
+	}
 	//update N2C, C2N, inEdgeCounts outEdgeMaps
 	for (int c = 0; c < CmtyV.Len(); c++) {
 	    std::vector<int> TempVec;
@@ -316,16 +392,6 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 	//reconstruct small graphs
 	SuperNet->Clr();
 	bool BuildSmallGraphNow = true;
-
-	// for(int i = 0; i < NewC2N.size(); i++){
-	// 	for(int j = 0; j < NewC2N[i].size(); j++){
-	// 		if(NewN2C(NewC2N[i][j]) != i){
-	// 			printf("Something wrong with N2C!!!!!!\n");
-	// 			printf("size is %d\n", NewC2N[i].size());
-	// 			printf("it is %d,  should be %d \n", (int)NewN2C(NewC2N[i][j]), i);
-	// 		}
-	// 	}
-	// }	
 	
 	BuildSmallAndBigGraphToMemory(InNet, NewC2N, NewN2C, NetVector, SuperNet, BuildSmallGraphNow);
 	printf("original number of partitions %d, new number of partitions %d \n", C2N.size(), NewC2N.size());
