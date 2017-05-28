@@ -232,6 +232,7 @@ void LearnAndWriteOutputEmbeddingForAll(TStr& OutFile, std::ofstream& StatsStrea
         
         FOut.PutLn();
     }
+    CurrSmallNet.Clr();
     end = std::clock();
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     StatsStream << elapsed_secs << "\t";
