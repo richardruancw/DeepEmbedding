@@ -186,7 +186,6 @@ void GetCommunitiesByMerge(const PWNet& InNet, const std::vector<std::vector<int
 	for (int i = 0; i < TopGroup.size(); i++) {
 		OldC2NewC.AddDat(TopGroup[i], i);
 		NewC2N.push_back(C2N[TopGroup[i]]);
-		printf("The added group has size%d\n", C2N[TopGroup[i]].size());
 		NumSettledNodes += C2N[TopGroup[i]].size();
 	}
 
@@ -213,11 +212,6 @@ void GetCommunitiesByMerge(const PWNet& InNet, const std::vector<std::vector<int
 		// Clear 
 		TempActiveBoundary.clear();
 		printf("After the %d round of merging, we have %d nodes, target is %d\n", Round, NumSettledNodes, InNet->GetNodes());
-		printf("The merged commnuites looks like\n");
-		for (int i = 0; i < NewC2N.size(); i++) {
-			printf("%d  ", NewC2N[i].size());
-		}
-		printf("\n");
 	}
 
 	if (NumSettledNodes < InNet->GetNodes()) {
