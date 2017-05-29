@@ -25,8 +25,10 @@ void SuperGraphConsturction(PWNet & SuperNet, std::vector<int> & inEdgeCounts, s
 				SuperNet->AddNode(neighbor);
 			}
 			if(! SuperNet->IsEdge(i, neighbor)){
-				SuperNet->AddEdge(i,neighbor, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
-				SuperNet->AddEdge(neighbor,i, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+				if((double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])) > 0){
+					SuperNet->AddEdge(i,neighbor, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+					SuperNet->AddEdge(neighbor,i, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+				}
 			}
 		}
 		if(i % 1 == 0){
@@ -34,6 +36,7 @@ void SuperGraphConsturction(PWNet & SuperNet, std::vector<int> & inEdgeCounts, s
     		fflush(stdout);
 		}
 	}
+
 	printf("\n");
 }
 
