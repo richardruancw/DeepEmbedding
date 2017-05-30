@@ -419,7 +419,7 @@ bool PairComparator(std::pair<int, double> p1, std::pair<int, double> p2){
 }
 
 // delete the edges of some high-degree nodes
-void DeleteTroubleMarkers(PWNet & SuperNet){
+void DeleteTroubleMakers(PWNet & SuperNet){
 	printf("every been here\n");
 	for(TWNet::TNodeI NI = SuperNet->BegNI(); NI < SuperNet->EndNI(); NI++){
 		int OriginalDeg = NI.GetOutDeg();
@@ -451,22 +451,6 @@ void DeleteTroubleMarkers(PWNet & SuperNet){
 			}
 			printf("finish deleting, new degree is %d\n", NI.GetOutDeg());
 			assert(NI.GetOutDeg() <= 1000);
-		}
-	}
-}
-
-void LearnOrInterp(std::vector< std::vector<int> > & C2N, THashSet<TInt> & LearnComMarker, 
-	THashSet<TInt> & InterpNodeMarker, int & SizeThreshold){
-	//take C2N, find all communities that are large enough to be run n2v on, 
-	//mark all the nodes to be interpolated.
-	for(int i = 0; i < C2N.size(); i++){
-		
-		if(C2N[i].size() >= SizeThreshold){
-			LearnComMarker.AddKey(i);
-		}else{
-			for(int j = 0; j < C2N[i].size(); j++){
-				InterpNodeMarker.AddKey(C2N[i][j]);
-			}
 		}
 	}
 }
