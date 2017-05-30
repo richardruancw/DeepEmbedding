@@ -230,10 +230,6 @@ void BuildSmallAndBigGraphToDisk(PWNet & InNet,std::vector< std::vector<int> > &
 	}
 }
 
-bool EdgeComparator(TWNet::TEdgeI & e1, TWNet::TEdgeI & e2){
-	return (e1.GetDat() > e2.GetDat()); 
-}
-
 bool CheckAdd(TCnCom & com, int & alreadyIn, int & wantCheck, PWNet & SuperNet, bool & shouldAdd){
 	for(int j = 0; j < com.Len(); j++){
 		if(! SuperNet->IsEdge(wantCheck, com[j]) || 
@@ -412,4 +408,49 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 	assert(OldSize == NewSize);
 	C2N = NewC2N;
 	N2C = NewN2C;
+}
+
+// bool EdgeComparator(TWNet::TEdgeI & e1, TWNet::TEdgeI & e2){
+// 	return (e1.GetDat() > e2.GetDat()); 
+// }
+
+bool PairComparator(std::pair<int, double> p1, std::pair<int, double> p2){
+	return (p1.second < p2.second);
+}
+
+// delete the edges of some high-degree nodes
+void DeleteTroubleMarkers(PWNet & SuperNet){
+	printf("every been here\n");
+	for(TWNet::TNodeI NI = SuperNet->BegNI(); NI < SuperNet->EndNI(); NI++){
+		int OriginalDeg = NI.GetOutDeg();
+		
+		if(OriginalDeg > 10){
+			printf("Begin deleting, original out degree is %d\n", OriginalDeg);
+			std::vector<std::pair<int, double> > NbrAndWeightV;
+	// get all the outNeighboring nodes and the weight (conductance) 
+	// between the neighbor and current node
+			for(int i = 0; i < OriginalDeg; i++){
+				int NeighborId = NI.GetOutNId(i);
+				double Conductance = SuperNet->GetEDat(NI.GetId(), NeighborId);
+				NbrAndWeightV.push_back(std::pair<int, double>(NeighborId,Conductance));
+			}
+			// printf("get all the neibors of current node\n");
+			assert(NbrAndWeightV.size() == OriginalDeg);
+			//sort the out-neighbors by conductance
+			// printf("sort the (neighbor, weight) pair\n");
+			std::sort(NbrAndWeightV.begin(), NbrAndWeightV.end(), PairComparator);
+			//delete out edges with small conductance
+			// printf("delete edges with small weight(conductance)\n");
+			for(int i = 0; i < NbrAndWeightV.size(); i++){
+				int NeighborId = NbrAndWeightV[i].first;
+				SuperNet->DelEdge(NI.GetId(), NeighborId);
+				OriginalDeg--;
+				if(OriginalDeg <= 10){
+					break;
+				}
+			}
+			printf("finish deleting, new degree is %d\n", NI.GetOutDeg());
+			assert(NI.GetOutDeg() <= 10);
+		}
+	}
 }
