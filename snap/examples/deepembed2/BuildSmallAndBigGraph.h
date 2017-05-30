@@ -25,7 +25,7 @@ void communityDetect(int & option, TCnComV & CmtyV, PUNGraph & Graph, double & Q
 bool CheckAdd(TCnCom & com, int & alreadyIn, int & wantCheck, PWNet & SuperNet, bool & shouldAdd);
 void ConductanceMerge(PWNet & SuperNet, TCnComV & CmtyV, double & percent, int & maxRound);
 bool PairComparator(std::pair<int, double> p1, std::pair<int, double> p2);
-void DeleteTroubleMarkers(PWNet & SuperNet);
+void DeleteTroubleMakers(PWNet & SuperNet);
 // void BuildSuperGraphToMemory(PWNet & InNet, std::vector< std::vector<int> > & C2N, 
 	// THash<TInt, TInt> & N2C, PWNet & SuperNet, std::vector<int> & inEdgeCounts, std::vector<THash<TInt, TInt> > outEdgeMaps);
 
