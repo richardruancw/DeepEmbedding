@@ -16,6 +16,7 @@
 #include "GetRawCommunities.h"
 #include "BuildSmallAndBigGraph.h"
 #include "GetCommunitiesByMerge.h"
+#include "linearinterpolation.h"
 #include "BuildSmallAndBigGraph.h"
 
 #ifdef USE_OPENMP
@@ -132,19 +133,48 @@ int main(int argc, char* argv[]) {
   // BuildSmallAndBigGraphToDisk(InNet, NewC2N, N2C, NewGraphFolder);
 
   //End of partition, timing
-  InNet.Clr();
   std::clock_t end = std::clock();
   double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
   std::ofstream StatsStream;
   StatsStream.open(StatsFile.CStr());
   StatsStream << elapsed_secs << "\n";
-  // DeleteTroubleMarkers(SuperNet);
 
-  LearnAndWriteOutputEmbeddingForAll(OutFile, StatsStream, SuperNet, NetVector, ParamP, ParamQ, Dimensions, 
-    WalkLen, NumWalks, WinSize, Iter, Verbose);
+  //LearnAndWriteOutputEmbeddingForAll(OutFile, StatsStream, SuperNet, NetVector, ParamP, ParamQ, Dimensions, 
+  //  WalkLen, NumWalks, WinSize, Iter, Verbose);
+
+  THashSet<TInt> LearnComMarker;
+  THashSet<TInt> InterpNodeMarker;
+
+  printf("______________________________\n");
+  printf("Decide which group to learn\n");
+  double Quantile = 0.3;
+  int SizeThreshold = GetLastSizeForQuantile(NewC2N, Quantile);
+  printf("The threshold is %d\n", SizeThreshold);
   
-  // std::cout<<NewGraphFolder<<std::endl;
+  LearnOrInterp(NewC2N, LearnComMarker, InterpNodeMarker, SizeThreshold);
+
+  printf("______________________________\n");
+  printf("Learn local embeddings for selected groups\n");
+  TIntFltVH SelectedEmbedding;
+  LearnEmbeddingForSelected(LearnComMarker, SelectedEmbedding, NetVector,
+  ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose);
+
+  printf("______________________________\n");
+  printf("Do linearinterpolation\n");
+  TIntFltVH LocalEmbeddingsHVForAll(SelectedEmbedding);
+  int TotalRound = 10;
+  LinearInterpolation(InNet, SelectedEmbedding, LocalEmbeddingsHVForAll, TotalRound,
+  ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, WinSize, Verbose);
+
+  printf("______________________________\n");
+  printf("Add global embeddings\n");
+  TIntFltVH FinalEmbedding;
+  ConcatenateGlobalEmbedding(FinalEmbedding, LocalEmbeddingsHVForAll, SuperNet,
+  N2C, ParamP, ParamQ, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Verbose); 
   
+  printf("______________________________\n");
+  printf("WriteOutput!\n");
+  WriteOutput(OutFile, FinalEmbedding);
   
   return 0;
 }

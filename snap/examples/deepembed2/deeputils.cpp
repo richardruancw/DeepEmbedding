@@ -239,6 +239,16 @@ void LearnAndWriteOutputEmbeddingForAll(TStr& OutFile, std::ofstream& StatsStrea
   }
 }
 
+int GetLastSizeForQuantile(const std::vector<std::vector<int> >& N2C, double Quantile) {
+  std::vector<int> NodeDist;
+  for (int i = 0; i < N2C.size(); i++) {
+    NodeDist.push_back(N2C[i].size());
+  }
+  int TargetIdx = (int) N2C.size() * Quantile;
+  std::nth_element(NodeDist.begin() + 0, NodeDist.begin() + TargetIdx, NodeDist.end());
+  return (NodeDist[TargetIdx]);
+}
+
 void OutputNodeDistribution(std::string OutFile, std::string Comment, std::vector<std::vector<int> >& N2C) {
   std::ofstream StatsStream;
   StatsStream.open(OutFile.c_str());
@@ -248,6 +258,62 @@ void OutputNodeDistribution(std::string OutFile, std::string Comment, std::vecto
  		StatsStream << N2C[i].size() << " ";
   }
   StatsStream << std::endl;
+}
+
+void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& SelectedEmbedding, TVec<PWNet>& NetVector,
+  double& ParamP, double& ParamQ, int& SmallDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose) {
+
+  int cnt = 0;
+  for (THashSet<TInt>::TIter iter = SelectedGroup.BegI(); iter < SelectedGroup.EndI(); iter++) {
+    int i = iter.GetKey();
+
+    std::clock_t begin = std::clock();
+
+    cnt++;
+    printf("This for the %d cluster\n", cnt);
+
+    TIntFltVH EmbeddingsHVSmallNet;
+    PWNet CurrSmallNet = NetVector[i];
+    // Learn embedding
+    node2vec(CurrSmallNet, ParamP, ParamQ, SmallDimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
+    EmbeddingsHVSmallNet);
+    // save to hash table
+    for (TIntFltVH::TIter smalliter = EmbeddingsHVSmallNet.BegI(); smalliter < EmbeddingsHVSmallNet.EndI(); smalliter++) {
+        SelectedEmbedding.AddDat(smalliter.GetKey(), smalliter.GetDat());
+    }
+    CurrSmallNet.Clr();
+    std::clock_t end = std::clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    //StatsStream << elapsed_secs << "\t";
+  }
+}
+
+void ConcatenateGlobalEmbedding(TIntFltVH& FinalEmbedding, TIntFltVH& LocalEmbedding, PWNet& SuperNet,
+  THash<TInt, TInt>& N2C, double& ParamP, double& ParamQ, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose) {
+
+  // Learn global embediing 
+  TIntFltVH EmbeddingsHVSuperNet;
+  node2vec(SuperNet, ParamP, ParamQ, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
+    EmbeddingsHVSuperNet);
+
+  for(THash<TInt, TInt>::TIter ThashIter = N2C.BegI(); ThashIter < N2C.EndI(); ThashIter++) {
+    // Pre allocate memory for efficiency
+    TInt GroupId = ThashIter->Dat;
+    TInt NodeId = ThashIter->Key;
+    int SmallDim = LocalEmbedding.GetDat(GroupId).Len();
+    TVec<TFlt> TotalEmbeddingV(SmallDim + SuperDimensions);
+
+    for (int i = 0; i < (SmallDim + SuperDimensions); i++) {
+      // add local embeddings
+      if (i < SmallDim) {
+          TotalEmbeddingV[i] = LocalEmbedding.GetDat(NodeId)[i];
+      // ad global embeddings
+      } else {
+        TotalEmbeddingV[i - SmallDim] = EmbeddingsHVSuperNet.GetDat(GroupId)[i - SmallDim];
+      }
+    }
+    FinalEmbedding.AddDat(NodeId, TotalEmbeddingV);
+  }
 }
 
 

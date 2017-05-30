@@ -40,15 +40,28 @@ void GetRandomWalks(PWNet& InNet, TVVec<TInt, int64>& WalksVV, TIntV& NIdsV,doub
 void WriteOutput(TStr& OutFile, TIntFltVH& EmbeddingsHV);
 
 
+int GetLastSizeForQuantile(const std::vector<std::vector<int> >& N2C, double Quantile);
+
 
 void ComputeMetricsForNodes(const PWNet& InNet, const TVVec<TInt, int64>& WalksVV, TIntFltH& MetricCounter);
+
 
 void SelectRepresentativeNodes(PWNet& InNet, THashSet<TInt>& RepresentativeNodes, TInt NodeNum, 
   double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, bool& Verbose);
 
+
 void LearnAndWriteOutputEmbeddingForAll(TStr& OutFile, std::ofstream& StatsStream, PWNet& SuperNet, TVec<PWNet>& NetVector,
   double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose);
 
+
 void OutputNodeDistribution(std::string OutFile, std::string Comment, std::vector<std::vector<int> >& N2C);
+
+
+void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& SelectedEmbedding, TVec<PWNet>& NetVector,
+  double& ParamP, double& ParamQ, int& SmallDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose);
+
+
+void ConcatenateGlobalEmbedding(TIntFltVH& FinalEmbedding, TIntFltVH& LocalEmbedding, PWNet& SuperNet,
+  THash<TInt, TInt>& N2C, double& ParamP, double& ParamQ, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose); 
 
 #endif //DEEPUTILIS_H
