@@ -138,6 +138,7 @@ int main(int argc, char* argv[]) {
   std::ofstream StatsStream;
   StatsStream.open(StatsFile.CStr());
   StatsStream << elapsed_secs << "\n";
+  // DeleteTroubleMarkers(SuperNet);
 
   LearnAndWriteOutputEmbeddingForAll(OutFile, StatsStream, SuperNet, NetVector, ParamP, ParamQ, Dimensions, 
     WalkLen, NumWalks, WinSize, Iter, Verbose);
