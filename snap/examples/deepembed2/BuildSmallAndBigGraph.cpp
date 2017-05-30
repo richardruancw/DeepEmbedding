@@ -410,3 +410,19 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 	C2N = NewC2N;
 	N2C = NewN2C;
 }
+
+void LearnOrInterp(std::vector< std::vector<int> > & C2N, THashSet<TInt> & LearnComMarker, 
+	THashSet<TInt> & InterpNodeMarker, int & SizeThreshold){
+	//take C2N, find all communities that are large enough to be run n2v on, 
+	//mark all the nodes to be interpolated.
+	for(int i = 0; i < C2N.size(); i++){
+		
+		if(C2N[i].size() >= SizeThreshold){
+			LearnComMarker.AddKey(i);
+		}else{
+			for(int j = 0; j < C2N[i].size(); j++){
+				InterpNodeMarker.AddKey(C2N[i][j]);
+			}
+		}
+	}
+}
