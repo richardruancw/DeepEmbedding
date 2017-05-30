@@ -416,7 +416,7 @@ bool PairComparator(std::pair<int, double> p1, std::pair<int, double> p2){
 }
 
 // delete the edges of some high-degree nodes
-void DeleteTroubleMarkers(PWNet & SuperNet){
+void DeleteTroubleMakers(PWNet & SuperNet){
 	printf("every been here\n");
 	for(TWNet::TNodeI NI = SuperNet->BegNI(); NI < SuperNet->EndNI(); NI++){
 		int OriginalDeg = NI.GetOutDeg();
