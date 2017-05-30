@@ -52,7 +52,6 @@ void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFlt
 			Ids.Add(NI.GetId());
 		}
 	  	for (int64 i = 0; i < NumWalks; i++) {
-			#pragma omp parallel for schedule(dynamic)
 			for(int64 j = 0; j < Ids.Len(); j++){
 				TIntV WalkV;
 	      		SimulateWalk(InNet, Ids[j], WalkLen, Rnd, WalkV);
