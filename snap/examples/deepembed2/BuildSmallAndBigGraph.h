@@ -26,6 +26,7 @@ bool CheckAdd(TCnCom & com, int & alreadyIn, int & wantCheck, PWNet & SuperNet, 
 void ConductanceMerge(PWNet & SuperNet, TCnComV & CmtyV, double & percent, int & maxRound);
 bool PairComparator(std::pair<int, double> p1, std::pair<int, double> p2);
 void DeleteTroubleMarkers(PWNet & SuperNet);
+void LearnOrInterp(std::vector< std::vector<int> > & C2N, THashSet<TInt> & LearnComMarker, THashSet<TInt> & InterpNodeMarker, int & SizeThreshold);
 // void BuildSuperGraphToMemory(PWNet & InNet, std::vector< std::vector<int> > & C2N, 
 	// THash<TInt, TInt> & N2C, PWNet & SuperNet, std::vector<int> & inEdgeCounts, std::vector<THash<TInt, TInt> > outEdgeMaps);
 
