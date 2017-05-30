@@ -413,6 +413,21 @@ void MergeSmallSuperNodes(PWNet & InNet, std::vector< std::vector<int> > & C2N,
 // bool EdgeComparator(TWNet::TEdgeI & e1, TWNet::TEdgeI & e2){
 // 	return (e1.GetDat() > e2.GetDat()); 
 // }
+void LearnOrInterp(std::vector< std::vector<int> > & C2N, THashSet<TInt> & LearnComMarker, 
+	THashSet<TInt> & InterpNodeMarker, int & SizeThreshold){
+	//take C2N, find all communities that are large enough to be run n2v on, 
+	//mark all the nodes to be interpolated.
+	for(int i = 0; i < C2N.size(); i++){
+		
+		if(C2N[i].size() >= SizeThreshold){
+			LearnComMarker.AddKey(i);
+		}else{
+			for(int j = 0; j < C2N[i].size(); j++){
+				InterpNodeMarker.AddKey(C2N[i][j]);
+			}
+		}
+	}
+}
 
 bool PairComparator(std::pair<int, double> p1, std::pair<int, double> p2){
 	return (p1.second < p2.second);
