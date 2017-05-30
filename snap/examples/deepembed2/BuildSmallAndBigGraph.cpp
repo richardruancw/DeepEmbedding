@@ -25,8 +25,10 @@ void SuperGraphConsturction(PWNet & SuperNet, std::vector<int> & inEdgeCounts, s
 				SuperNet->AddNode(neighbor);
 			}
 			if(! SuperNet->IsEdge(i, neighbor)){
-				SuperNet->AddEdge(i,neighbor, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
-				SuperNet->AddEdge(neighbor,i, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+				if((double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])) > 0){
+					SuperNet->AddEdge(i,neighbor, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+					SuperNet->AddEdge(neighbor,i, (double)interClusterEdgeCount/(double)(std::min(inEdgeCounts[i], inEdgeCounts[neighbor])));
+				}
 			}
 		}
 		if(i % 1 == 0){
@@ -34,6 +36,7 @@ void SuperGraphConsturction(PWNet & SuperNet, std::vector<int> & inEdgeCounts, s
     		fflush(stdout);
 		}
 	}
+
 	printf("\n");
 }
 
@@ -421,7 +424,7 @@ void DeleteTroubleMakers(PWNet & SuperNet){
 	for(TWNet::TNodeI NI = SuperNet->BegNI(); NI < SuperNet->EndNI(); NI++){
 		int OriginalDeg = NI.GetOutDeg();
 		
-		if(OriginalDeg > 10){
+		if(OriginalDeg > 1000){
 			printf("Begin deleting, original out degree is %d\n", OriginalDeg);
 			std::vector<std::pair<int, double> > NbrAndWeightV;
 	// get all the outNeighboring nodes and the weight (conductance) 
@@ -442,12 +445,12 @@ void DeleteTroubleMakers(PWNet & SuperNet){
 				int NeighborId = NbrAndWeightV[i].first;
 				SuperNet->DelEdge(NI.GetId(), NeighborId);
 				OriginalDeg--;
-				if(OriginalDeg <= 10){
+				if(OriginalDeg <= 1000){
 					break;
 				}
 			}
 			printf("finish deleting, new degree is %d\n", NI.GetOutDeg());
-			assert(NI.GetOutDeg() <= 10);
+			assert(NI.GetOutDeg() <= 1000);
 		}
 	}
 }
