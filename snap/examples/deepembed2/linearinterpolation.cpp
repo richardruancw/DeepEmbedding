@@ -21,19 +21,21 @@ TFltV RefactorVector(TFltV& v1, TInt& factor){
 void TestLINEARINTERPOLATION() {
 }
 
-void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, int& TotalRound,
-	double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, int& WinSize, bool& Verbose){
+void LevelWiseSpread(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, int& Dimensions){
 
 	int64 Settled;
 	int64 Unsettled;
 	int64 TotalNodes = InNet->GetNodes();
 	int Round = 0;
 
-	while(Round < TotalRound){
+	while(true){
 		Round += 1;
 		Settled = EmbeddingsHVForAll.Len();
 		Unsettled = TotalNodes - Settled;
-		printf("Begin round %d out of %d\n", Round, TotalRound);
+		if(Unsettled == 0){
+			break;
+		}
+		printf("Begin round %d\n", Round);
 		printf("Already settled %d out of %d, the portion is %f\n", 
 			Settled, TotalNodes, (float)Settled / (float)TotalNodes );
 		printf("Remain unsettled %d out of %d, the portion is %f\n", 
@@ -51,24 +53,17 @@ void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFlt
 			Count.AddDat(NI.GetId()) = 0;
 			Ids.Add(NI.GetId());
 		}
-	  	for (int64 i = 0; i < NumWalks; i++) {
-			for(int64 j = 0; j < Ids.Len(); j++){
-				TIntV WalkV;
-	      		SimulateWalk(InNet, Ids[j], WalkLen, Rnd, WalkV);
-	      		for(int k = 0; k < WalkV.Len(); k++){
-	      			if(Srcs.IsKey(WalkV[k])){ // If this center node is not settled
-	      				int start = (k - WinSize) > 0 ? (k - WinSize) : 0;
-	      				int end = (k + WinSize) < WalkV.Len() - 1 ? (k + WinSize) : WalkV.Len() - 1;
-	      				for(int p = start; p <= end; p++){
-	      					if(EmbeddingsHVForAll.IsKey(WalkV[p])){ // If this visited node is settled
-	      						Srcs(WalkV[k]) = AddVectors(Srcs(WalkV[k]), EmbeddingsHVForAll(WalkV[p]));
-	      						Count(WalkV[k]) += 1;
-	      					}
-	      				}
-	      			}// Else do nothing
-	      		}
-			}
-		}
+
+		for(int i = 0; i < Ids.Len(); i++){
+			TWNet::TNodeI curtNode = InNet->GetNI(Ids[i]);
+			for(int e = 0; e < curtNode.GetDeg(); e++){
+				int NId = curtNode.GetNbrNId(e);
+      			if(EmbeddingsHVForAll.IsKey(NId)){
+      				Srcs(Ids[i]) = AddVectors(Srcs(Ids[i]), EmbeddingsHVForAll(NId));
+      				Count(Ids[i]) += 1;
+      			}
+      		}
+	    }
 
 		for(int64 j = 0; j < Ids.Len(); j++){
 	  		if(Count(Ids[j]) == 0){	// If visited no settled node at all

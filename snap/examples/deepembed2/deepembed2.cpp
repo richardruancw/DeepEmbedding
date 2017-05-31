@@ -163,8 +163,7 @@ int main(int argc, char* argv[]) {
   printf("Do linearinterpolation\n");
   TIntFltVH LocalEmbeddingsHVForAll(SelectedEmbedding);
   int TotalRound = 10;
-  LinearInterpolation(InNet, SelectedEmbedding, LocalEmbeddingsHVForAll, TotalRound,
-  ParamP, ParamQ, Dimensions, WalkLen, NumWalks, Iter, WinSize, Verbose);
+  LevelWiseSpread(InNet, SelectedEmbedding, LocalEmbeddingsHVForAll, Dimensions);
 
   printf("______________________________\n");
   printf("Add global embeddings\n");

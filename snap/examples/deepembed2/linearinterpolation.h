@@ -3,8 +3,7 @@
 
 void TestLINEARINTERPOLATION();
 
-void LinearInterpolation(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, int& TotalRound,
-	double& ParamP, double& ParamQ, int& Dimensions, int& WalkLen, int& NumWalks, int& Iter, int& WinSize, bool& Verbose);
+void LevelWiseSpread(PWNet& InNet, TIntFltVH& EmbeddingsHVForSample, TIntFltVH& EmbeddingsHVForAll, int& Dimensions);
 
 TFltV AddVectors(TFltV& v1, TFltV& v2);
 
