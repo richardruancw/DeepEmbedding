@@ -57,7 +57,7 @@ void LearnAndWriteOutputEmbeddingForAll(TStr& OutFile, std::ofstream& StatsStrea
 void OutputNodeDistribution(std::string OutFile, std::string Comment, std::vector<std::vector<int> >& N2C);
 
 
-void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& SelectedEmbedding, TVec<PWNet>& NetVector,
+void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& SelectedEmbedding, TVec<PWNet>& NetVector, std::stringstream& StatsStream,
   double& ParamP, double& ParamQ, int& SmallDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose);
 
 

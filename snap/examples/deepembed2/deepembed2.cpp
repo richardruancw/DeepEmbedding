@@ -3,6 +3,8 @@
 #include "n2v.h"
 #include <vector>
 
+#include <sstream>
+#include <iostream>
 #include <iostream>
 #include <utility>
 #include <queue>
@@ -138,7 +140,7 @@ int main(int argc, char* argv[]) {
   std::ofstream StatsStream;
   StatsStream.open(StatsFile.CStr());
   StatsStream << elapsed_secs << "\n";
-
+  
   //LearnAndWriteOutputEmbeddingForAll(OutFile, StatsStream, SuperNet, NetVector, ParamP, ParamQ, Dimensions, 
   //  WalkLen, NumWalks, WinSize, Iter, Verbose);
 
@@ -148,17 +150,23 @@ int main(int argc, char* argv[]) {
   printf("______________________________\n");
   printf("Decide which group to learn\n");
   double Quantile = 0.3;
+
+  begin = std::clock();
   int SizeThreshold = GetLastSizeForQuantile(NewC2N, Quantile);
   printf("The threshold is %d\n", SizeThreshold);
-  
   LearnOrInterp(NewC2N, LearnComMarker, InterpNodeMarker, SizeThreshold);
+  end = std::clock();
+  elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
   printf("______________________________\n");
   printf("Learn local embeddings for selected groups\n");
   TIntFltVH SelectedEmbedding;
-  LearnEmbeddingForSelected(LearnComMarker, SelectedEmbedding, NetVector,
+  std::stringstream TimeSStream;
+  LearnEmbeddingForSelected(LearnComMarker, SelectedEmbedding, NetVector, TimeSStream,
   ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose);
 
+
+  begin = std::clock();
   printf("______________________________\n");
   printf("Do linearinterpolation\n");
   TIntFltVH LocalEmbeddingsHVForAll(SelectedEmbedding);
@@ -174,7 +182,12 @@ int main(int argc, char* argv[]) {
   printf("______________________________\n");
   printf("WriteOutput!\n");
   WriteOutput(OutFile, FinalEmbedding);
-  
+
+  end = std::clock();
+  elapsed_secs += double(end - begin) / CLOCKS_PER_SEC;
+  StatsStream << elapsed_secs << "\n";
+  StatsStream << TimeSStream.str();
+
   return 0;
 }
 

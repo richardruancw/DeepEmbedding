@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <utility>
-
+#include <sstream>
 #include <vector>
 #include <algorithm>
 
@@ -260,7 +260,7 @@ void OutputNodeDistribution(std::string OutFile, std::string Comment, std::vecto
   StatsStream << std::endl;
 }
 
-void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& SelectedEmbedding, TVec<PWNet>& NetVector,
+void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& SelectedEmbedding, TVec<PWNet>& NetVector, std::stringstream& StatsStream,
   double& ParamP, double& ParamQ, int& SmallDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose) {
 
   int cnt = 0;
@@ -284,7 +284,7 @@ void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& Selecte
     CurrSmallNet.Clr();
     std::clock_t end = std::clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    //StatsStream << elapsed_secs << "\t";
+    StatsStream << elapsed_secs << "\t";
   }
 }
 
@@ -309,8 +309,9 @@ void ConcatenateGlobalEmbedding(TIntFltVH& FinalEmbedding, TIntFltVH& LocalEmbed
           TotalEmbeddingV[i] = LocalEmbedding.GetDat(NodeId)[i];
       // ad global embeddings
       } else {
-        TotalEmbeddingV[i - SmallDim] = EmbeddingsHVSuperNet.GetDat(GroupId)[i - SmallDim];
+        TotalEmbeddingV[i] = EmbeddingsHVSuperNet.GetDat(GroupId)[i - SmallDim];
       }
+      //printf("The concatenated is %d\n", TotalEmbeddingV.Len());
     }
     FinalEmbedding.AddDat(NodeId, TotalEmbeddingV);
   }
