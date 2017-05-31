@@ -62,6 +62,9 @@ void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& Selecte
 
 
 void ConcatenateGlobalEmbedding(TIntFltVH& FinalEmbedding, TIntFltVH& LocalEmbedding, PWNet& SuperNet,
-  THash<TInt, TInt>& N2C, double& ParamP, double& ParamQ, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose); 
+  std::vector<std::vector<int> > NewC2N, double& ParamP, double& ParamQ, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose); 
+
+void ConcatenateDirect(TStr& OutFile, TIntFltVH& LocalEmbedding, PWNet& SuperNet,
+  std::vector<std::vector<int> > NewC2N, double& ParamP, double& ParamQ, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose);
 
 #endif //DEEPUTILIS_H

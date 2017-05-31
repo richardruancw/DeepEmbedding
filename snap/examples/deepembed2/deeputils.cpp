@@ -289,36 +289,77 @@ void LearnEmbeddingForSelected(THashSet<TInt>& SelectedGroup, TIntFltVH& Selecte
 }
 
 void ConcatenateGlobalEmbedding(TIntFltVH& FinalEmbedding, TIntFltVH& LocalEmbedding, PWNet& SuperNet,
-  THash<TInt, TInt>& N2C, double& ParamP, double& ParamQ, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose) {
+  std::vector<std::vector<int> > NewC2N, double& ParamP, double& ParamQ, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose) {
 
   // Learn global embediing 
   TIntFltVH EmbeddingsHVSuperNet;
   node2vec(SuperNet, ParamP, ParamQ, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
     EmbeddingsHVSuperNet);
 
-  for(THash<TInt, TInt>::TIter ThashIter = N2C.BegI(); ThashIter < N2C.EndI(); ThashIter++) {
-    // Pre allocate memory for efficiency
-    TInt GroupId = ThashIter->Dat;
-    TInt NodeId = ThashIter->Key;
-    int SmallDim = LocalEmbedding.GetDat(GroupId).Len();
-    TVec<TFlt> TotalEmbeddingV(SmallDim + SuperDimensions);
+  for (int i = 0; i < NewC2N.size(); i++) {
+    for (int j = 0; j < NewC2N[i].size(); j++) {
+      TInt GroupId = i;
+      TInt NodeId = NewC2N[i][j];
+      IAssert(EmbeddingsHVSuperNet.IsKey(GroupId));
+      IAssert(LocalEmbedding.IsKey(NodeId));
 
-    for (int i = 0; i < (SmallDim + SuperDimensions); i++) {
+      int SmallDim = LocalEmbedding.GetDat(NodeId).Len();
+      TVec<TFlt> TotalEmbeddingV(SmallDim + SuperDimensions);
+      for (int k = 0; k < (SmallDim + SuperDimensions); k++) {
       // add local embeddings
-      if (i < SmallDim) {
-          TotalEmbeddingV[i] = LocalEmbedding.GetDat(NodeId)[i];
-      // ad global embeddings
-      } else {
-        TotalEmbeddingV[i] = EmbeddingsHVSuperNet.GetDat(GroupId)[i - SmallDim];
-      }
+        if (k < SmallDim) {
+            TotalEmbeddingV[k] = LocalEmbedding.GetDat(NodeId)[k];
+        // ad global embeddings
+        } else {
+          TotalEmbeddingV[k] = EmbeddingsHVSuperNet.GetDat(GroupId)[k - SmallDim];
+        }
       //printf("The concatenated is %d\n", TotalEmbeddingV.Len());
-    }
+      }
     FinalEmbedding.AddDat(NodeId, TotalEmbeddingV);
+    }
   }
 }
 
+void ConcatenateDirect (TStr& OutFile, TIntFltVH& LocalEmbedding, PWNet& SuperNet,
+  std::vector<std::vector<int> > NewC2N, double& ParamP, double& ParamQ, int& SuperDimensions, int& WalkLen, int& NumWalks, int& WinSize, int& Iter, bool& Verbose) {
 
+  // Learn global embediing 
+  TIntFltVH EmbeddingsHVSuperNet;
+  node2vec(SuperNet, ParamP, ParamQ, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Verbose, 
+    EmbeddingsHVSuperNet);
 
+  TFOut FOut(OutFile);
+  FOut.PutCh(' ');
+  FOut.PutLn();
+
+  for (int i = 0; i < NewC2N.size(); i++) {
+    for (int j = 0; j < NewC2N[i].size(); j++) {
+
+      TInt NodeId = NewC2N[i][j];
+
+      int SmallDim = LocalEmbedding.GetDat(NodeId).Len();
+      int SuperDim = EmbeddingsHVSuperNet.GetDat(i).Len();
+
+      IAssert(SuperDim == SuperDimensions);
+      IAssert(EmbeddingsHVSuperNet.IsKey(i));
+      IAssert(LocalEmbedding.IsKey(NodeId));
+
+      FOut.PutInt(NodeId);
+      FOut.PutCh(' ');
+      for (int k = 0; k < (SmallDim + SuperDim); k++) {
+      // add local embeddings
+        if (k < SmallDim) {
+          FOut.PutFlt(LocalEmbedding.GetDat(NodeId)[k]);
+          // ad global embeddings
+        } else {
+          FOut.PutFlt(EmbeddingsHVSuperNet.GetDat(i)[k - SmallDim]);
+        }
+        FOut.PutCh(' ');
+      }
+      FOut.PutLn();
+    }
+  }
+}
 
 
 

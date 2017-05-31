@@ -25,6 +25,8 @@
 #include <omp.h>
 #endif
 
+const double DISCARD_QUANTILE = 0.3;
+
 int main(int argc, char* argv[]) {
   
   TStr InFile,OutFile, StatsFile;
@@ -149,10 +151,9 @@ int main(int argc, char* argv[]) {
 
   printf("______________________________\n");
   printf("Decide which group to learn\n");
-  double Quantile = 0.3;
 
   begin = std::clock();
-  int SizeThreshold = GetLastSizeForQuantile(NewC2N, Quantile);
+  int SizeThreshold = GetLastSizeForQuantile(NewC2N, DISCARD_QUANTILE);
   printf("The threshold is %d\n", SizeThreshold);
   LearnOrInterp(NewC2N, LearnComMarker, InterpNodeMarker, SizeThreshold);
   end = std::clock();
@@ -162,6 +163,7 @@ int main(int argc, char* argv[]) {
   printf("Learn local embeddings for selected groups\n");
   TIntFltVH SelectedEmbedding;
   std::stringstream TimeSStream;
+
   LearnEmbeddingForSelected(LearnComMarker, SelectedEmbedding, NetVector, TimeSStream,
   ParamP, ParamQ, Dimensions, WalkLen, NumWalks, WinSize, Iter, Verbose);
 
@@ -174,14 +176,11 @@ int main(int argc, char* argv[]) {
   LevelWiseSpread(InNet, SelectedEmbedding, LocalEmbeddingsHVForAll, Dimensions);
 
   printf("______________________________\n");
-  printf("Add global embeddings\n");
+  printf("Add global embeddings and output all \n");
   TIntFltVH FinalEmbedding;
-  ConcatenateGlobalEmbedding(FinalEmbedding, LocalEmbeddingsHVForAll, SuperNet,
-  N2C, ParamP, ParamQ, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Verbose); 
-  
-  printf("______________________________\n");
-  printf("WriteOutput!\n");
-  WriteOutput(OutFile, FinalEmbedding);
+
+  ConcatenateDirect(OutFile, LocalEmbeddingsHVForAll, SuperNet,
+  NewC2N, ParamP, ParamQ, SuperDimensions, WalkLen, NumWalks, WinSize, Iter, Verbose); 
 
   end = std::clock();
   elapsed_secs += double(end - begin) / CLOCKS_PER_SEC;
