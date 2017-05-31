@@ -25,7 +25,7 @@
 #include <omp.h>
 #endif
 
-const double DISCARD_QUANTILE = 0.3;
+const double DISCARD_QUANTILE = 0.5;
 
 int main(int argc, char* argv[]) {
   
