@@ -47,6 +47,12 @@ int main(int argc, char* argv[]) {
   ReadGraph(InFile, Directed, Weighted, Verbose, InNet);
   printf("End loading graph\n");
 
+  printf("Num of Nodes: %d\n", InNet->GetNodes());
+  InNet = TSnap::GetMxScc(InNet);
+  printf("Num of Nodes in MxScc: %d\n", InNet->GetNodes());
+  IAssert(TSnap::IsWeaklyConn(InNet));
+  printf("Begin finding raw communities using BFS\n");
+
   /**************************/
   if (Option == 0) {
     TIntFltVH EmbeddingsHV;
@@ -64,14 +70,6 @@ int main(int argc, char* argv[]) {
   } 
   /**************************/
 
-  printf("Num of Nodes: %d\n", InNet->GetNodes());
-
-  InNet = TSnap::GetMxScc(InNet);
-  printf("Num of Nodes in MxScc: %d\n", InNet->GetNodes());
-  
-  IAssert(TSnap::IsWeaklyConn(InNet));
-  
-  printf("Begin finding raw communities using BFS\n");
   std::vector<std::vector<int> > C2N;
   THash<TInt, TInt> N2C;
 
