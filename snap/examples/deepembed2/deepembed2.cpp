@@ -137,6 +137,9 @@ int main(int argc, char* argv[]) {
   StatsStream.open(StatsFile.CStr());
   StatsStream << elapsed_secs << "\n";
 
+  //used default parameter: threshold 1000
+  DeleteTroubleMakers(SuperNet);
+
   LearnAndWriteOutputEmbeddingForAll(OutFile, StatsStream, SuperNet, NetVector, ParamP, ParamQ, Dimensions, 
     WalkLen, NumWalks, WinSize, Iter, Verbose);
   
