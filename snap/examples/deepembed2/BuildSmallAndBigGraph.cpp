@@ -48,6 +48,10 @@ void computeWeight(PWNet & InNet, int & nodeId, THash<TInt, TInt> & N2C,
 	//get current node
 	TWNet::TNodeI currentNode = InNet->GetNI(nodeId);
 	int weight12, weight21;
+
+	if(!smallNet->IsNode(nodeId)){
+				smallNet->AddNode(nodeId);
+	}
 	//for all the neighbors of the node
 	for(int m = 0; m < currentNode.GetDeg(); m++){
 		//get the neighbor
