@@ -246,15 +246,19 @@ void GetCommunitiesByMerge(const PWNet& InNet, const std::vector<std::vector<int
 
     // Following are debug code for following tasks.
     /*
+
 	IAssert(InputIsValid(NewC2N, N2C));
 	int TotalNodes = 0;
+	THashSet<TInt> TotalUniqueNodes;
 	for (int i = 0; i < NewC2N.size(); i++) {
 		PWNet smallNet = PWNet::New();
 		THashSet<TInt> Duplicated;
 		for (int j = 0; j < NewC2N[i].size(); j++) {
 			IAssert(!Duplicated.IsKey(NewC2N[i][j]));
 			Duplicated.AddKey(NewC2N[i][j]);
+			TotalUniqueNodes.AddKey(NewC2N[i][j]);
 			int NodeOne = NewC2N[i][j];
+			if (!smallNet->IsNode(NodeOne) && InNet->IsNode(NodeOne)) {smallNet->AddNode(NodeOne); TotalNodes++;};
 			for (int k = j+1; k < NewC2N[i].size(); k++) {
 				int NodeTwo = NewC2N[i][k];
 				IAssert(InNet->IsNode(NodeOne) && InNet->IsNode(NodeTwo));
@@ -270,11 +274,13 @@ void GetCommunitiesByMerge(const PWNet& InNet, const std::vector<std::vector<int
 		}
 
 		IAssert(Duplicated.Len() == NewC2N[i].size());
-		printf("%d , %d\n", smallNet->GetNodes(), NewC2N[i].size());
 		IAssert(smallNet->GetNodes() == NewC2N[i].size());
-		IAssert(TSnap::IsWeaklyConn<PWNet>(smallNet));
+		if (smallNet->GetNodes() > 1) {
+			IAssert(TSnap::IsWeaklyConn<PWNet>(smallNet));
+		}
 	}
 	IAssert(TotalNodes == NumSettledNodes);
+	IAssert(TotalUniqueNodes.Len() == InNet->GetNodes());
 
     
 	for (TWNet::TNodeI iter = InNet->BegNI(); iter < InNet->EndNI(); iter++) {
